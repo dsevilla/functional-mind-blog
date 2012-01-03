@@ -2,6 +2,8 @@
 ;;;
 ;;; $Header: /home/gene/library/website/docsrc/lh/RCS/html-opti.lisp,v 395.1 2008/04/20 17:25:45 gene Exp $
 ;;;
+;;; Taken from http://cybertiggyr.com/lh/ (thanks to Gene Michael Stover).
+;;; Some modifications by me (x-html, etc.)
 
 (in-package :cl-user)
 
@@ -124,6 +126,6 @@ return a new list of the new strings."
 (defhtml-region ul)
 
 (defun br () "<br />")
-(defun hr () "<ht />")
+(defun hr () "<hr />")
 
 ;;; --- end of file ---
