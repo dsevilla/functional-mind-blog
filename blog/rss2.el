@@ -1,15 +1,10 @@
-;;; -*- mode: LISP; syntax: COMMON-LISP; package: dsevilla.blog; base: 10; encoding: utf-8; -*-
+;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
-
-(in-package dsevilla.blog)
-
-; http://wp-themes.com/zbench/
 
 ; TODO: maybe in the future this would be a class "rss" instance.
 (defun rss-header (title)
   (declare (ignore title))
-  (concatenate
-   'string
+  (concat
    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <rss version=\"2.0\"
         xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"
@@ -38,8 +33,7 @@
 
 
 (defun rss-post (post)
-  (concatenate
-   'string
+  (concat
    "<item>
 <title>" (post-title post) "</title>
 
@@ -50,10 +44,10 @@
 "</pubDate>
 <dc:creator>diego sevilla</dc:creator>
 "
-
-(apply #'concatenate 'string
+(apply #'concat
        (mapcar #'(lambda (cat)
-                   (format nil "<category><![CDATA[~(~A~)]]></category>~%" cat))
+                   (format "<category><![CDATA[%s]]></category>\n"
+                           (downcase (symbol-name cat))))
                (categories post)))
 
 "
@@ -66,7 +60,7 @@
 
 (defun rss-content (title posts)
   (declare (ignore title))
-  (apply #'concatenate 'string
+  (apply #'concat
          (loop for post-string in (mapcar #'rss-post posts)
               repeat *rss-posts-max* ; get the first *rss-posts-max*
               collect post-string)))

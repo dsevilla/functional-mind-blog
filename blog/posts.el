@@ -1,7 +1,5 @@
-;;; -*- mode: LISP; syntax: COMMON-LISP; package: dsevilla.blog; base: 10; encoding: utf-8; -*-
+;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;; List of posts
-
-(in-package dsevilla.blog)
 
 ;;; include previous posts before us
 (map nil (lambda (l) (apply #'new-post l)) *posts-data-old*)
