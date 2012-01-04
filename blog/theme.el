@@ -1,9 +1,7 @@
-;;; -*- mode: LISP; syntax: COMMON-LISP; package: dsevilla.blog; base: 10; encoding: utf-8; -*-
+;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
 
-(in-package dsevilla.blog)
-
-(defparameter *google-header*
+(defconstant *google-header*
 "   <!-- Google Plus -->
    <script type=\"text/javascript\" src=\"https://apis.google.com/js/plusone.js\"></script>
 <link href=\"google-code-prettify/prettify.css\" type=\"text/css\" rel=\"stylesheet\" />
@@ -11,7 +9,7 @@
 <script type=\"text/javascript\" src=\"google-code-prettify/lang-lisp.js\"></script>
 ")
 
-(defparameter *search-scripts*
+(defconstant *search-scripts*
   "
 <script type=\"text/javascript\">
 var search_js_loaded = 0;
@@ -91,8 +89,7 @@ function doSearch()
 
 ; TODO: maybe in the future this would be a class "theme" instance.
 (defun html-theme-header (title)
-  (concatenate
-   'string
+  (concat
    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\" dir=\"ltr\" lang=\"en-US\"><head profile=\"http://gmpg.org/xfn/11\">
         <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />
@@ -100,25 +97,26 @@ function doSearch()
         <meta name=\"author\" content=\"diego sevilla ruiz\" />
         <meta name=\"last-modified\" content=\""
    (multiple-value-bind
-         (second minute hour date month year day-of-week dst-p tz)
-     (get-decoded-time)
-     (setf tz (- tz))
-     (when dst-p
-       (incf tz))
-     (format nil "~2,'0d:~2,'0d:~2,'0d of ~a, ~d/~2,'0d/~d (GMT~@d)"
+         (second minute hour day month year day-of-week dst-p tz)
+     (decode-time)
+     (setf tz (/ tz 3600))
+     ;(when dst-p
+     ;  (incf tz))
+     (format "%d, %02d %s %4d %02d:%02d:%02d GMT%s%d"
+             (nth day-of-week *day-names*) ; 0=Sunday
+             day
+             (nth month *month-names*)
+             year
              hour
              minute
              second
-             (nth day-of-week *day-names*)
-             month
-             date
-             year
+             (if (> tz 0) "+" "-")
              tz))
 "\" />
         <title>"
    *blog-title*
    (when title
-     (format nil " » ~A" title))
+     (format " » %s" title))
    "</title>
                 <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"zbench/style.css\" />
    <link rel=\"alternate\" type=\"application/rss+xml\" title=\""
@@ -180,8 +178,7 @@ function doSearch()
 
 (defun html-theme-sidebar (title)
   (declare (ignore title))
-  (concatenate
-   'string
+  (concat
    "<div id=\"sidebar-border\"> <div id=\"rss_border\"> <div
         class=\"rss_border\"> <div id=\"rss_wrap\"> <div
         class=\"rss_wrap\"> <a class=\"rss rss_text\"
@@ -193,7 +190,7 @@ function doSearch()
                 <h3>links</h3>
                 <ul>
 "
-   (apply #'concatenate 'string
+   (apply #'concat
           (mapcar #'(lambda (link) (li link))
                   *blog-links*))
 "
@@ -248,8 +245,7 @@ function doSearch()
 
 
 (defun html-disqus-bit (post)
-  (concatenate
-   'string
+  (concat
    "
 <div id=\"disqus_thread\"></div>
 <script type=\"text/javascript\">
@@ -273,12 +269,11 @@ function doSearch()
 <a href=\"http://disqus.com\" class=\"dsq-brlink\">blog comments powered by <span class=\"logo-disqus\">Disqus</span></a>
 "))
 
-(defparameter *post-content-hash-table* (make-hash-table :test #'equal)
+(defvar *post-content-hash-table* (make-hash-table :test #'equal)
   "Hash table that holds the content of each post to speed up page generation.")
 
 (defun html-theme-post (post &key comments)
-  (concatenate
-   'string
+  (concat
    "<div class=\"post\"><!-- post div -->"
 
    (let* ((slug (slug post))
@@ -286,8 +281,7 @@ function doSearch()
      (if content
          content
          (setf (gethash slug *post-content-hash-table*)
-               (concatenate
-                'string
+               (concat
                 "<h2 class=\"title\"><a href=\""
                 (post-url post)
                 "\" title=\"Permalink to "
@@ -360,8 +354,7 @@ function doSearch()
 
 (defun html-theme-content (title posts &optional prev-page next-page)
   (declare (ignore title))
-  (concatenate
-   'string
+  (concat
    "<!-- CONTENT START -->
 <div id=\"content\">
 "
@@ -369,7 +362,7 @@ function doSearch()
    ; count all the elements!
    (if (null (cdr posts))
        (html-theme-post (first posts) :comments :yes) ; include comments
-       (apply #'concatenate 'string (mapcar #'html-theme-post posts)))
+       (apply #'concat (mapcar #'html-theme-post posts)))
 
    (when (or prev-page next-page)
      "<p style=\"float:right;\">")
@@ -380,8 +373,8 @@ function doSearch()
 
    ; next?
    (when next-page
-     (concatenate 'string " &#8212; " (a `((:href . ,next-page))
-                                         "next page »")))
+     (concat " &#8212; " (a `((:href . ,next-page))
+                            "next page »")))
 
    (when (or prev-page next-page)
      "</p>")
@@ -409,8 +402,7 @@ function doSearch()
 ")
 
 (defun html-theme-footer (title)
-  (concatenate
-   'string
+  (concat
    "</div><!--wrapper-->
 <div class=\"clear\"></div>
 <div id=\"footer\">
@@ -423,7 +415,7 @@ This work is licensed under a <a rel=\"license\"
 href=\"http://creativecommons.org/licenses/by-nc/2.0/\">Creative Commons License</a>.</p>
 <!-- /Creative Commons License -->
                 <p>
-                        Copyright © 2011 Diego Sevilla Ruiz | Theme based on <a href=\"http://zww.me/\" title=\"designed by zwwooooo\">zBench</a>
+                        Copyright © 2012 Diego Sevilla Ruiz | Theme based on <a href=\"http://zww.me/\" title=\"designed by zwwooooo\">zBench</a>
                         | Powered by <a href=\"http://www.cliki.net/index\">Common Lisp!</a>
                 </p>
                 <span id=\"back-to-top\">↑ <a href=\"#\" rel=\"nofollow\" title=\"Back to top\">Top</a></span>

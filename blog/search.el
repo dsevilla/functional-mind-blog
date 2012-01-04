@@ -1,48 +1,45 @@
-;;; -*- mode: LISP; syntax: COMMON-LISP; package: dsevilla.blog; base: 10; encoding: utf-8; -*-
+;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
 
-(in-package dsevilla.blog)
+;; (defun min2 (n1 n2)
+;;   (if (null n1)
+;;       n2
+;;       (if (null n2)
+;;           n1
+;;           (min n1 n2))))
 
-(defun min2 (n1 n2)
-  (if (null n1)
-      n2
-      (if (null n2)
-          n1
-          (min n1 n2))))
+;; (defun split-by-one-space-or-newline (string)
+;;   "Returns a list of substrings of string
+;; divided by ONE space each.
+;; Note: Two consecutive spaces will be seen as
+;; if there were an empty string between them."
+;;   (loop for i = 0 then (1+ j)
+;;      as j = (min2 (position ?\  string :start i)
+;;                   (position #\n string :start i))
+;;      collect (subseq string i j)
+;;      while j))
 
-(defun split-by-one-space-or-newline (string)
-  "Returns a list of substrings of string
-divided by ONE space each.
-Note: Two consecutive spaces will be seen as
-if there were an empty string between them."
-  (loop for i = 0 then (1+ j)
-     as j = (min2 (position #\Space string :start i)
-                  (position #\Newline string :start i))
-     collect (subseq string i j)
-     while j))
+(defvar *words-to-post-num-hash* (make-hash-table :test #'equal))
 
-(defparameter *words-to-post-num-hash* (make-hash-table :test #'equal))
-
-(defparameter *words-to-post-hash* (make-hash-table :test #'equal))
+(defvar *words-to-post-hash* (make-hash-table :test #'equal))
 
 (defun not-word-char-remover (string)
-  (let ((chars '(#\. #\[ #\] #\, #\( #\) #\\ #\" #\' #\« #\» #\! #\? #\¡
-                 #\¿ #\~ #\= #\* #\$ #\# #\< #\> #\{ #\} #\& #\| #\: #\;)))
-    (reduce #'(lambda (s c)
-                (substitute #\Space c s)) chars :initial-value string)))
+  (let ((chars '(?\. ?\[ ?\] ?\, ?\( ?\) ?\\ ?\" ?\' ?\« ?\» ?\! ?\? ?\¡
+                 ?\¿ ?\~ ?\= ?\* ?\$ ?\# ?\< ?\> ?\{ ?\} ?\& ?\| ?\: ?\;)))
+    (substitute-if ?\  #'(lambda (c) (find c chars)) string)))
 
 (defun numeric-char-p (char)
-  (find char "0123456789"))
+  (and (>= char ?0) (<= char ?9)))
 
 (defun update-words-for-post (post pnum)
   (let* ((word-list
-          (split-by-one-space-or-newline
-           (string-downcase
+          (split-string
+           (downcase
             (not-word-char-remover
-             (concatenate 'string
-                          (post-clean-body post)
-                          " "
-                          (markup-clean (post-title post)))))))
+             (concat
+              (post-clean-body post)
+              " "
+              (markup-clean (post-title post)))))))
          (word-list-final
           (remove-duplicates
            (remove-if #'(lambda (w)
@@ -63,9 +60,7 @@ if there were an empty string between them."
        do (update-words-for-post j i)))
 
 (defun generate-search-js ()
-  (with-open-file (file (blog-file-name "search.js")
-                        :direction :output
-                        :if-exists :supersede)
+  (with-temp-file (blog-file-name "search.js")
     (labels ((link-to-post (post)
                (replace-all
                 (a `((:href . ,(post-url post)))
