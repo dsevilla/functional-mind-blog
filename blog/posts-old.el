@@ -1,9 +1,7 @@
-;;; -*- mode: LISP; syntax: COMMON-LISP; package: dsevilla.blog; base: 10; encoding: utf-8; -*-
+;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;; List of posts of the old blog
 
-(in-package dsevilla.blog)
-
-(defparameter *posts-data-old* '(
+(defconst *posts-data-old* '(
 ("Hola :)"
 :body "Bueno, este es el primer artículo... No sé cómo saldrá publicado, si funcionarán las tildes o no, ya que WordPress, que es el programa que uso, no parece tener localización más que inglés. Por ahora no sé ni qué nombre ponerle al <em>blog</em>. Veremos..."
 :day 10
@@ -10658,4 +10656,3 @@ De hace algunos meses.</p>
           :year 2011)
 
 ))
-

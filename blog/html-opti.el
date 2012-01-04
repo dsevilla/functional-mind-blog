@@ -1,73 +1,40 @@
-;;; -*- mode: Lisp -*-
+;;; -*- mode: emacs-lisp; -*-
 ;;;
 ;;; $Header: /home/gene/library/website/docsrc/lh/RCS/html-opti.lisp,v 395.1 2008/04/20 17:25:45 gene Exp $
 ;;;
 ;;; Taken from http://cybertiggyr.com/lh/ (thanks to Gene Michael Stover).
-;;; Some modifications by me (x-html, etc.)
+;;; Some modifications by me (x-html, etc.) Adapted to emacs-lisp.
 
-(in-package :cl-user)
-
-(defpackage html
-  (:use "COMMON-LISP")
-  (:export "A"
-           "BLOCKQUOTE"
-	   "BODY"
-	   "BR"
-           "CODE"
-           "DIV"
-	   "EM"
-	   "ENCODE"
-	   "H1"
-	   "H2"
-	   "H3"
-	   "H4"
-	   "HEAD"
-	   "HR"
-	   "HTML"
-	   "IMG"
-	   "LI"
-	   "OL"
-	   "P"
-	   "PRE"
-	   "SMALL"
-	   "STRONG"
-	   "TABLE"
-	   "TITLE"
-	   "TD"
-	   "TH"
-	   "TR"
-	   "UL"))
-(in-package html)
+(eval-when-compile
+  (require 'cl))
 
 (defvar *html-translations* (make-hash-table :test #'eql))
-(setf (gethash #\< *html-translations*) "&lt;"
-      (gethash #\> *html-translations*) "&gt;"
-      (gethash #\& *html-translations*) "&amp;"
-      (gethash #\" *html-translations*) "&quot;")
+(setf (gethash ?< *html-translations*) "&lt;"
+      (gethash ?> *html-translations*) "&gt;"
+      (gethash ?& *html-translations*) "&amp;"
+      (gethash ?\" *html-translations*) "&quot;")
 
 (defun encode (str)
   "Scan a string, converting the unsafe characters to entities
 for HTML.  Return the new, safe, HTML string."
   (let ((html ""))
     (map nil #'(lambda (c)
-		 (setq html (format nil "~A~A" html
+		 (setq html (format "%s%s" html
 				    (gethash c *html-translations* c))))
 	 str)
     html))
 
 (defun tag-begin (tag attribs)
-  (apply #'concatenate 'string
-	 (append (list (format nil "<~(~A~)" tag))
-		 (mapcar #'(lambda (pair)
-			     (format nil
-				     " ~(~A~)=\"~A\""
-				     (car pair)
-				     (cdr pair)))
+  (apply #'concat
+	 (append (list (downcase (format "<%s" tag)))
+                 (mapcar #'(lambda (pair)
+			     (concat (downcase (format " %s=" (car pair)))
+                                     (format "\"%s\"" (cdr pair))))
 			 attribs)
 		 (list ">"))))
 
 (defun tag-end (tag)
-  (format nil "</~(~A~)>" tag))
+  (downcase (format "</%s>" tag)))
 
 (defun ensure-strings (lst)
   "Convert each element of LST to a string &
@@ -76,28 +43,29 @@ return a new list of the new strings."
 	      (typecase x
 			(string x)
 			(symbol (symbol-name x))
-			(t (format nil "~A" x))))
+			(t (format "%s" x))))
           lst))
 
-(defmacro defhtml-region (name &key
-                          prepend-newline
-                          append-newline)
+
+;; note: emacs-lisp seems to need &optional before optional &keys
+(defmacro defhtml-region (name &optional &key prepend-newline
+                               &optional &key append-newline)
   `(defun ,name (&rest args)
      (let ((attribs (and (consp (first args))
 			 (first args)))
 	   (lst (if (consp (first args))
 		    (rest args)
                     args)))
-       (apply #'concatenate 'string
+       (apply #'concat
 	      (append ,(if prepend-newline
-			   `'(,(format nil "~%"))
-			 ())
+                           '(list "\n")
+                         ())
 		      (list (tag-begin ',name attribs))
 		      (ensure-strings lst)
 		      (list (tag-end ',name))
 		      ,(if append-newline
-			   `'(,(format nil "~%"))
-			 ()))))))
+			   '(list "\n")
+                           ()))))))
 
 
 (defhtml-region a)
