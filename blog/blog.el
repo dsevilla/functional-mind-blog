@@ -186,37 +186,38 @@
   (declare (post pst))
   (let* ((post-time (post-timestamp pst))
          (month (cdr (assoc :month post-time))))
-    (format nil "~(~A~) ~A, ~A"
-            (if (numberp month)
-                (month-name month)
-                month)
+    (format "%s %d, %d"
+            (downcase (if (numberp month)
+                          (month-name month)
+                        month))
             (cdr (assoc :day post-time))
             (cdr (assoc :year post-time)))))
 
 (defun url-for-category (category-sym)
-  (let ((category-name (string-downcase (symbol-name category-sym))))
-    (format nil "<a href=\"category-~A.html\"
-                 title=\"View all posts in ~:*~A\" rel=\"category tag\">~:*~A</a>"
-            category-name)))
+  (let ((category-name (downcase (symbol-name category-sym))))
+    (format "<a href=\"category-%s.html\"
+                 title=\"View all posts in %s\" rel=\"category tag\">%s</a>"
+            category-name category-name category-name)))
 
 (defun post-categories-links (pst)
   (declare (post pst))
-  (format nil "~{~A~^, ~}"
-          (mapcar #'url-for-category (categories pst))))
+  (mapconcat #'(lambda (c) (format "%s" c))
+             (mapcar #'url-for-category (post-categories pst))
+             ", "))
 
 (declaim (inline post-url))
 (defun post-url (pst)
   (declare (post pst))
-  (concatenate 'string *absolute-url* "/" (slug pst) ".html"))
+  (concat *absolute-url* "/" (post-slug pst) ".html"))
 
 (declaim (inline post-internet-url))
 (defun post-internet-url (pst)
   (declare (post pst))
-  (concatenate 'string *blog-internet-url* "/" (slug pst) ".html"))
+  (concat *blog-internet-url* "/" (post-slug pst) ".html"))
 
 (declaim (inline archive-file))
 (defun archive-file (archive-cons)
-  (format nil "archives-~A-~A"
+  (format "archives-%s-%s"
           (month-name (car archive-cons))
           (cdr archive-cons)))
 
@@ -226,28 +227,27 @@
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
 ;;; a nice blog class
-(defparameter *archive-li* nil)
+(defvar *archive-li* nil)
 (defun archive-li-s ()
   (if *archive-li* ; already calculated?
       *archive-li*
       (error "Archive-li not calculated!")))
 (defun generate-archive-li ()
   (setf *archive-li*
-        (apply #'concatenate 'string
+        (apply #'concat
                (mapcar
                 #'(lambda (archive-cons)
-                    (li (a `((:href . ,(concatenate
-                                        'string
+                    (li (a `((:href . ,(concat
                                         (archive-file-url archive-cons)
                                         ".html")))
-                           (format nil "~A ~A"
+                           (format "%s %s"
                                    (month-name (car archive-cons))
                                    (cdr archive-cons)))))
                 *months-years*))))
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
 ;;; a nice blog class
-(defparameter *all-categories* nil) ; list of all the categories of all posts
+(defvar *all-categories* nil) ; list of all the categories of all posts
 (defun all-categories ()
   (if *all-categories*
       *all-categories*
@@ -260,7 +260,7 @@
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
 ;;; a nice blog class
-(defparameter *posts-for-category* (make-hash-table))
+(defvar *posts-for-category* (make-hash-table))
 (defun classify-posts-by-category ()
   (map nil #'(lambda (category)
                (let* ((posts
@@ -277,7 +277,7 @@
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
 ;;; a nice blog class
-(defparameter *categories-links* nil)
+(defvar *categories-links* nil)
 (defun categories-links ()
   (if *categories-links*
       *categories-links*
@@ -290,13 +290,13 @@
           maximizing (car c) into max
           minimizing (car c) into min
           finally (return (values max min)))
-     (apply #'concatenate 'string
+     (apply #'concat
             (loop for k being the hash-keys in *posts-for-category*
                using (hash-value v)
-               collect (format nil "<a href=\"category-~A.html\"
-                             title=\"~A topic~:*~P\" rel=\"category tag\"
+               collect (format "<a href=\"category-%s.html\"
+                             title=\"%s topic~:*~P\" rel=\"category tag\"
                              style=\"font-size: ~Apx;\">~3:*~A</a> "
-                               (string-downcase k)
+                               (downcase k)
                                (car v)
                                (+ 9 (round
                                      (/ (- (car v) min-n-posts)
