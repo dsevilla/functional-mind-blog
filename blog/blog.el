@@ -1,74 +1,70 @@
-;;; -*- mode: LISP; syntax: COMMON-LISP; package: dsevilla.blog; base: 10; encoding: utf-8; -*-
+;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
 
-(in-package :cl-user)
+;; (defpackage dsevilla.blog
+;;   (:use "COMMON-LISP" "HTML"
+;;         #+sbcl
+;;         :sb-thread
+;;   ) ;"COM.GIGAMONKEYS.PATHNAMES")
+;;   )
 
-(defpackage dsevilla.blog
-  (:use "COMMON-LISP" "HTML"
-        #+sbcl
-        :sb-thread
-  ) ;"COM.GIGAMONKEYS.PATHNAMES")
-  )
-
-(in-package dsevilla.blog)
 
 ;;; TODO: Maybe all these parameters should form a blog class
 
 ;;; Blog configuration constants
 
-(defparameter *base-url* "fm")
+(eval-when-compile
+  (require 'cl))
 
-(defparameter *absolute-url* (concatenate 'string "/" *base-url*))
+(defconst *base-url* "fm")
 
-(defparameter *blog-internet-url*
-  (concatenate 'string
-               "http://neuromancer.inf.um.es"
-               *absolute-url*))
+(defconst *absolute-url* (concat "/" *base-url*))
 
-(defparameter *blog-internet-rss-url*
-  (concatenate 'string
-               *blog-internet-url* "/rss2.xml"))
+(defconst *blog-internet-url*
+  (concat "http://neuromancer.inf.um.es" *absolute-url*))
 
-(defparameter *base-img-url* "img")
-(defparameter *img-internet-url*
-  (concatenate 'string
-               *blog-internet-url* "/" *base-img-url*))
+(defconst *blog-internet-rss-url*
+  (concat *blog-internet-url* "/rss2.xml"))
 
-(defparameter *blog-title* "Functional Mind")
-(defparameter *blog-subtitle*
-  "a common-lisp based blog by diego sevilla")
+(defconst *base-img-url* "img")
+(defconst *img-internet-url*
+  (concat *blog-internet-url* "/" *base-img-url*))
 
-(defparameter *rss-description-length* 400
+(defconst *blog-title* "Functional Mind")
+(defconst *blog-subtitle*
+  "an emacs-lisp and org-mode based blog by diego sevilla")
+
+(defconst *rss-description-length* 400
   "Length of the description string in the RSS.")
 
-(defparameter *rss-posts-max* 100
+(defconst *rss-posts-max* 100
   "Number of max posts in the RSS.")
 
-(defparameter *posts-per-page* 50
+(defconst *posts-per-page* 50
   "Number of posts per page.")
 
-(defparameter *post-slug-hash* (make-hash-table :test #'equal))
+(defvar *post-slug-hash* (make-hash-table :test #'equal))
 
-(defparameter *posts* ()
+(defvar *posts* ()
   "List of posts. Will be populated with the entries.")
 
-(defparameter *number-of-posts* 0
+(defvar *number-of-posts* 0
   "This is used to speed up calculations, to avoid calculating the
   length of the *posts* list. Maybe other approaches could have been used.")
 
-(defparameter *months-years* ()
+(defvar *months-years* ()
   "List of pairs (month . year) for the posts of this blog. This is
   needed as a variable because it is used twice. First to generate the
   pages themselves and then to generate the sidebar list.")
 
-(defparameter *blog-links* ()
+(defvar *blog-links* ()
   "List of links of this blog.")
 
 ;;; Decode time
 (defun get-actual-time-for-the-post ()
     "Return a new association list to be put into the timestamp field of a blog post"
     (multiple-value-bind (secs mins hours day month year)
-        (decode-universal-time (get-universal-time))
+        (decode-time)
       (declare (ignore secs))
       (mapcar #'cons (list :hours :minutes :day :month :year)
               (list hours mins day month year))))
@@ -80,29 +76,15 @@
               (list (or hours 0) (or minutes 0) day month year)))
 
 ;;; http://roeim.net/vetle/docs/cl-webapp-intro/part-1/
-(defclass post ()
-  ((title :initarg :title
-          :accessor post-title)
-   (body :initarg :body
-         :accessor post-body)
-   (description :accessor post-description
-                :initform nil)
-   (clean-body :accessor post-clean-body)
-   (categories :initarg :categories
-               :accessor categories
-               :initform (list :general))
-   (slug :initarg :slug
-              :accessor slug
-              :initform '())
-   (body-format :initarg :body-format
-                :accessor body-format
-                :initarg :string
-                :documentation "A symbol specifying the format of the entry.
- By default :string, but can hold new future values such as :markdown" )
-   (timestamp :initarg :timestamp
-              :accessor timestamp
-              :initform (get-actual-time-for-the-post)))
-  (:documentation "The blog post class."))
+(defstruct post
+  title
+  body
+  (description nil)
+  clean-body
+  (categories '(:general))
+  (slug nil)
+  (body-format :string)
+  (timestamp (get-actual-time-for-the-post)))
 
 
 (declaim (inline remove-non-url-chars))
@@ -111,36 +93,36 @@
    (coerce
     (loop for c across string  ; that Spanish thing...
          for j = (cond
-                   ((char= #\Space c) #\-)
-                   ((or (and (char>= c #\a) (char<= c #\z))
-                        (and (char>= c #\A) (char<= c #\Z))
-                        (and (char>= c #\0) (char<= c #\9)))
+                   ((= ?\  c) ?\-)
+                   ((or (and (>= c ?\a) (<= c ?\z))
+                        (and (>= c ?\A) (<= c ?\Z))
+                        (and (>= c ?\0) (<= c ?\9)))
                     c)
-                   ((char= #\á c) #\a)
-                   ((char= #\é c) #\e)
-                   ((char= #\í c) #\i)
-                   ((char= #\ó c) #\o)
-                   ((char= #\ú c) #\u)
-                   ((char= #\ñ c) #\n)
+                   ((= ?\á c) ?\a)
+                   ((= ?\é c) ?\e)
+                   ((= ?\í c) ?\i)
+                   ((= ?\ó c) ?\o)
+                   ((= ?\ú c) ?\u)
+                   ((= ?\ñ c) ?\n)
                    (t nil))
        when j collect j)
     'string))
 
 (declaim (inline empty-post-slug))
 (defun empty-post-slug (post)
-  (let ((timestamp (timestamp post)))
-    (format nil "post-~A-~(~A~)-~A"
+  (let ((timestamp (post-timestamp post)))
+    (format "post-%d-%d-%d"
             (cdr (assoc :year timestamp))
             (cdr (assoc :month timestamp))
             (cdr (assoc :day timestamp)))))
 
 (declaim (inline post-hash))
 (defun post-hash (post)
-  (reduce #'+ (post-body post) :key #'char-int :initial-value 0))
+  (reduce #'+ (post-body post) :initial-value 0))
 
 (defun initial-slug (post)
   (let ((slug (remove-non-url-chars
-               (string-downcase (post-title post)))))
+               (downcase (post-title post)))))
     (if (> (length slug) 0)
         slug
         (empty-post-slug post))))
@@ -153,7 +135,7 @@
                                         ; the very same day
     (when (gethash initial-slug *post-slug-hash*)
       (setf initial-slug
-            (format nil "~A-~A" initial-slug (empty-post-slug post))))
+            (format "%s-%s" initial-slug (empty-post-slug post))))
                                         ; If still in the hash table,
                                         ; do a hash for all the
                                         ; characters in the post and
@@ -176,21 +158,21 @@
                                         ; stability.
     (when (gethash initial-slug *post-slug-hash*)
       (setf initial-slug
-            (format nil "~A-~A" initial-slug (post-hash post))))
+            (format "%s-%s" initial-slug (post-hash post))))
                                         ; fill hash table of post
                                         ; slugs to avoid duplicates
     (setf (gethash initial-slug *post-slug-hash*) initial-slug)))
 
-(defparameter *month-names*
+(defconst *month-names*
   '("january" "february" "march" "april" "may" "june" "july"
     "august" "september" "october" "november" "december"))
 
-(defparameter *month-symbols*
+(defconst *month-symbols*
   '(:january :february :march :april
     :may :june :july :august :september
     :october :november :december))
 
-(defparameter *day-names*
+(defconst *day-names*
   '("monday" "tuesday" "wednesday"
     "thursday" "friday" "saturday"
     "sunday"))
@@ -202,7 +184,7 @@
 
 (defun post-date-time-string (pst)
   (declare (post pst))
-  (let* ((post-time (timestamp pst))
+  (let* ((post-time (post-timestamp pst))
          (month (cdr (assoc :month post-time))))
     (format nil "~(~A~) ~A, ~A"
             (if (numberp month)
@@ -420,11 +402,17 @@
 (defun calculate-post-clean-body (post)
   (markup-clean (post-body post)))
 
+(declaim (inline string-trim))
+(defun string-trim (s)
+  (let ((s1 (replace-regexp-in-string "[ \t]*$" "" s)))
+    (replace-regexp-in-string "^[ \t]*" "" s1)))
+
 (declaim (inline first-n-chars))
 (defun first-n-chars (string n)
-  (if (> (length string) n)
-      (concatenate 'string (string-trim " " (subseq string 0 n)) "[...]")
-      string))
+  (let ((s (string-trim string)))
+    (condition-case nil
+        (concat (substring s 0 (1- n)) "[...]")
+      (error s)))) ; smaller
 
 (defun calculate-post-description (post)
   (first-n-chars (post-clean-body post) *rss-description-length*))

@@ -43,9 +43,8 @@
          (word-list-final
           (remove-duplicates
            (remove-if #'(lambda (w)
-                          (or (< (length w) 3)
-                              (> (length w) 20)
-                              (every #'numeric-char-p w)))
+                          (let ((l (length w)))
+                            (or (< l 3) (> l 20) (every #'numeric-char-p w))))
                       word-list)
            :test #'equal)))
     (map nil
@@ -62,37 +61,37 @@
 (defun generate-search-js ()
   (with-temp-file (blog-file-name "search.js")
     (labels ((link-to-post (post)
-               (replace-all
+               (replace-regexp-in-string "'" "\\\\'"
                 (a `((:href . ,(post-url post)))
-                   (first-n-chars (markup-clean (post-title post)) 50))
-                "'" "\\'")))
+                   (first-n-chars (markup-clean (post-title post)) 50)))))
       ;; (write-string
       ;;  (format nil "// search.js for functional mind. Generated statically~%") file)
       ;; (write-string
       ;;  (format nil "// from the set of posts.~%") file)
-      (write-string "var posts = { 'postlist' : [" file)
-      (format file "'~A'" (link-to-post (first *posts*)))
+      (insert "var posts = { 'postlist' : [")
+      (insert (mapconcat #'(lambda (p) (format "'%s'" (link-to-post p)))
+                         *posts* ",\n"))
+      (insert (format "]};\n\n"))
 
-      (map nil #'(lambda (p) (format file ",~%'~A'" (link-to-post p)))
-           (cdr *posts*))
-      (format file "]};~%~%")
-
-      (format file "var posts_for_word = {~%")
+      (insert "var posts_for_word = {\n")
 
       (loop for k being the hash-keys in *words-to-post-num-hash*
          using (hash-value v)
-         do (format file "'~A' : [~{~A~^, ~}],~%" k (reverse v)))
+         do (insert
+             (concat
+              (format "'%s' : [" k)
+              (mapconcat #'(lambda (pn) (format "%d" pn))
+                         (reverse v) ", ")
+              "]")))
 
-      (format file "};~%"))))
+      (insert "};\n"))))
 
 (defun generate-description-files ()
   (loop for i = 0 then (1+ i)
      for p in *posts* do
-       (with-open-file (file (blog-file-name (format nil "desc-~A.js" i))
-                             :direction :output
-                             :if-exists :supersede)
-         (write-string (remove
-                        #\Newline
-                        (first-n-chars (post-description p) 50)) file))))
+       (with-temp-file (blog-file-name (format "desc-%d.js" i))
+         (insert (replace-regexp-in-string
+                  "\n" ""
+                  (first-n-chars (post-description p) 50))))))
 
 ;;; end of file
