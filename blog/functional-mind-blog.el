@@ -497,5 +497,6 @@
     (setf (post-description post) (calculate-post-description post))
     post))
 
+(provide 'functional-mind-blog)
 
 ;;; --- end of file ---
