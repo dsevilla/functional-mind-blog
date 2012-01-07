@@ -19,63 +19,66 @@
 ;;      collect (subseq string i j)
 ;;      while j))
 
-(defvar *words-to-post-num-hash* (make-hash-table :test #'equal))
+(defvar *fmb:words-to-post-num-hash* (make-hash-table :test #'equal))
 
-(defvar *words-to-post-hash* (make-hash-table :test #'equal))
+(defvar *fmb:words-to-post-hash* (make-hash-table :test #'equal))
 
-(defun not-word-char-remover (string)
+(defun fmb:not-word-char-remover (string)
   (let ((chars '(?\. ?\[ ?\] ?\, ?\( ?\) ?\\ ?\" ?\' ?\« ?\» ?\! ?\? ?\¡
                  ?\¿ ?\~ ?\= ?\* ?\$ ?\# ?\< ?\> ?\{ ?\} ?\& ?\| ?\: ?\;)))
     (substitute-if ?\  #'(lambda (c) (find c chars)) string)))
 
-(defun numeric-char-p (char)
+(defun fmb:numeric-char-p (char)
   (and (>= char ?0) (<= char ?9)))
 
-(defun update-words-for-post (post pnum)
+(defun fmb:update-words-for-post (post pnum)
   (let* ((word-list
           (split-string
            (downcase
-            (not-word-char-remover
+            (fmb:not-word-char-remover
              (concat
-              (post-clean-body post)
+              (fmb:post-clean-body post)
               " "
-              (markup-clean (post-title post)))))))
+              (fmb:markup-clean (fmb:post-title post)))))))
          (word-list-final
           (remove-duplicates
            (remove-if #'(lambda (w)
                           (let ((l (length w)))
-                            (or (< l 3) (> l 20) (every #'numeric-char-p w))))
+                            (or (< l 3)
+                                (> l 20)
+                                (every #'fmb:numeric-char-p w))))
                       word-list)
            :test #'equal)))
     (map nil
          #'(lambda (w)
-             (push pnum (gethash w *words-to-post-num-hash*))
-             (push post (gethash w *words-to-post-hash*)))
+             (push pnum (gethash w *fmb:words-to-post-num-hash*))
+             (push post (gethash w *fmb:words-to-post-hash*)))
          word-list-final)))
 
-(defun update-words-for-all-posts ()
+(defun fmb:update-words-for-all-posts ()
   (loop for i = 0 then (1+ i)
-       for j in *posts*
-       do (update-words-for-post j i)))
+       for j in *fmb:posts*
+       do (fmb:update-words-for-post j i)))
 
-(defun generate-search-js ()
-  (with-temp-file (blog-file-name "search.js")
+(defun fmb:generate-search-js ()
+  (with-temp-file (fmb:blog-file-name "search.js")
     (labels ((link-to-post (post)
                (replace-regexp-in-string "'" "\\\\'"
-                (a `((:href . ,(post-url post)))
-                   (first-n-chars (markup-clean (post-title post)) 50)))))
+                (h:a `((:href . ,(fmb:post-url post)))
+                   (fmb:first-n-chars (fmb:markup-clean
+                                       (fmb:post-title post)) 50)))))
       ;; (write-string
       ;;  (format nil "// search.js for functional mind. Generated statically~%") file)
       ;; (write-string
       ;;  (format nil "// from the set of posts.~%") file)
       (insert "var posts = { 'postlist' : [")
-      (insert (mapconcat #'(lambda (p) (format "'%s'" (link-to-post p)))
-                         *posts* ",\n"))
-      (insert (format "]};\n\n"))
+      (insert (mapconcat #'(lambda (p) (format "'%s'" (fmb:link-to-post p)))
+                         *fmb:posts* ",\n"))
+      (insert "]};\n\n")
 
       (insert "var posts_for_word = {\n")
 
-      (loop for k being the hash-keys in *words-to-post-num-hash*
+      (loop for k being the hash-keys in *fmb:words-to-post-num-hash*
          using (hash-value v)
          do (insert
              (concat
@@ -86,12 +89,12 @@
 
       (insert "};\n"))))
 
-(defun generate-description-files ()
+(defun fmb:generate-description-files ()
   (loop for i = 0 then (1+ i)
-     for p in *posts* do
-       (with-temp-file (blog-file-name (format "desc-%d.js" i))
+     for p in *fmb:posts* do
+       (with-temp-file (fmb:blog-file-name (format "desc-%d.js" i))
          (insert (replace-regexp-in-string
                   "\n" ""
-                  (first-n-chars (post-description p) 50))))))
+                  (fmb:first-n-chars (fmb:post-description p) 50))))))
 
 ;;; end of file
