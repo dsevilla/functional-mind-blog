@@ -1,7 +1,7 @@
 ;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
 
-(defconstant *google-header*
+(defconst *google-header*
 "   <!-- Google Plus -->
    <script type=\"text/javascript\" src=\"https://apis.google.com/js/plusone.js\"></script>
 <link href=\"google-code-prettify/prettify.css\" type=\"text/css\" rel=\"stylesheet\" />
@@ -9,7 +9,7 @@
 <script type=\"text/javascript\" src=\"google-code-prettify/lang-lisp.js\"></script>
 ")
 
-(defconstant *search-scripts*
+(defconst *search-scripts*
   "
 <script type=\"text/javascript\">
 var search_js_loaded = 0;

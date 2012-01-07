@@ -66,8 +66,11 @@
     (multiple-value-bind (secs mins hours day month year)
         (decode-time)
       (declare (ignore secs))
-      (mapcar #'cons (list :hours :minutes :day :month :year)
-              (list hours mins day month year))))
+      (list (cons :hours hours)
+            (cons :minutes mins)
+            (cons :day day)
+            (cons :month month)
+            (cons :year year))))
 
 (defun time-list (&key day month year hours minutes)
   (or (and day month year)
@@ -294,13 +297,15 @@
             (loop for k being the hash-keys in *posts-for-category*
                using (hash-value v)
                collect (format "<a href=\"category-%s.html\"
-                             title=\"%s topic~:*~P\" rel=\"category tag\"
-                             style=\"font-size: ~Apx;\">~3:*~A</a> "
+                             title=\"%d topic%s\" rel=\"category tag\"
+                             style=\"font-size: %dpx;\">%s</a> "
                                (downcase k)
                                (car v)
+                               (if (> (car v) 1) "s" "")
                                (+ 9 (round
                                      (/ (- (car v) min-n-posts)
-                                        (/ (- max-n-posts min-n-posts) 10))))))))))
+                                        (/ (- max-n-posts min-n-posts) 10))))
+                               (downcase k)))))))
 
 (declaim (inline cons-from-post-time))
 (defun cons-from-post-time (post)
@@ -334,28 +339,25 @@
 ;;; utility
 (declaim (inline rfc-2822-date))
 (defun rfc-2822-date (&optional time)
-  (multiple-value-bind (second minute hour date month year day-of-week dst-p tz)
-      (if time
-          (decode-universal-time time)
-          (get-decoded-time))
-    (setf tz (- tz))
-    (when dst-p
-      (incf tz))
-    (format nil "~:(~A~), ~2,'0d ~:(~A~) ~D ~2,'0d:~2,'0d:~2,'0d ~A~4,'0d"
-            (subseq (nth day-of-week *day-names*) 0 3)
-            date
-            (subseq (nth (1- month) *month-names*) 0 3)
+  (multiple-value-bind (second minute hour day month year day-of-week dst-p tz)
+      (decode-time time)
+    (setf tz (/ tz 3600))
+    ;(when dst-p
+    ;  (incf tz))
+    (format "%s, %02d %s %4d %02d:%02d:%02d %+05d"
+            (upcase-initials (subseq (nth day-of-week *day-names*) 0 3))
+            day
+            (upcase-initials (subseq (nth (1- month) *month-names*) 0 3))
             year
             hour
             minute
             second
-            (if (>= tz 0) '+ '-)
             tz)))
 
 (declaim (inline rfc-2822-date-for-post))
 (defun rfc-2822-date-for-post (post)
-  (let ((ts (timestamp post)))
-    (rfc-2822-date (encode-universal-time
+  (let ((ts (post-timestamp post)))
+    (rfc-2822-date (encode-time
                     0
                     (or (cdr (assoc :minutes ts)) 0)
                     (or (cdr (assoc :hours ts)) 0)
@@ -379,11 +381,11 @@
              (when (>= str-pos str-len) (return nil))
              (let* ((c (char body str-pos))
                     (d (prog1
-                           (cond ((and not-in-angle (not (char= #\< c)))
+                           (cond ((and not-in-angle (not (= ?\< c)))
                                   c)
-                                 ((and not-in-angle (char= #\< c))
+                                 ((and not-in-angle (= ?\< c))
                                   (setf not-in-angle nil))
-                                 ((char= #\> c)
+                                 ((= ?\> c)
                                   (setf not-in-angle t)
                                   nil)
                                  (t nil))
@@ -417,24 +419,24 @@
 (defun calculate-post-description (post)
   (first-n-chars (post-clean-body post) *rss-description-length*))
 
-(defun replace-all (string part replacement &key (test #'char=))
-  "Returns a new string in which all the occurences of the part
-is replaced with replacement."
-  (with-output-to-string (out)
-    (loop with part-length = (length part)
-       for old-pos = 0 then (+ pos part-length)
-       for pos = (search part string
-                         :start2 old-pos
-                         :test test)
-       do (write-string string out
-                        :start old-pos
-                        :end (or pos (length string)))
-       when pos do (write-string replacement out)
-       while pos)))
+;; (defun replace-all (string part replacement &key (test #'char=))
+;;   "Returns a new string in which all the occurences of the part
+;; is replaced with replacement."
+;;   (with-output-to-string (out)
+;;     (loop with part-length = (length part)
+;;        for old-pos = 0 then (+ pos part-length)
+;;        for pos = (search part string
+;;                          :start2 old-pos
+;;                          :test test)
+;;        do (write-string string out
+;;                         :start old-pos
+;;                         :end (or pos (length string)))
+;;        when pos do (write-string replacement out)
+;;        while pos)))
 
 (declaim (inline link))
 (defun link (url anchor &optional title rel)
-  (a (cons (cons :href (replace-all url "&" "&amp;"))
+  (a (cons (cons :href (replace-regexp-in-string "&" "&amp;" url))
            (cons (cons :rel (or rel "interesting link"))
                  (when title
                    (cons (cons :title title) nil))))
@@ -445,7 +447,7 @@ is replaced with replacement."
   (let ((img-html
          (img
           (append
-           (cons `(:src . ,(format nil "~A/~A" *img-internet-url* img-file))
+           (cons `(:src . ,(format "%s/%s" *img-internet-url* img-file))
                  (cons `(:alt . ,(if alt alt "Blog image.")) ; alt is obligatory
                        (when title `((:title . ,title)))))
            params))))
@@ -454,13 +456,13 @@ is replaced with replacement."
         img-html)))
 
 (defmacro __ (&rest rest)
-  `(concatenate 'string ,@rest))
+  `(concat 'string ,@rest))
 
 (defun blog-file-name (filename)
   (concatenate 'string *base-url* "/" filename))
 
-(defun new-post (title &key body (body-format :string)
-                         categories year month day hours minutes)
+(defun new-post (title &key body body-format
+                       categories year month day hours minutes)
   "Generate a new post. Increment `*number-of-posts*', and add it to
   the `*posts*' list. Finally, for each post, stablish its post
   slug. This is done in the order they are read to be stable in the
@@ -468,9 +470,9 @@ is replaced with replacement."
   assigned a different slug in the same order."
   (let ((post
          (apply
-          #'make-instance 'post
+          #'make-post
           `(:title ,title
-            :body-format ,body-format
+            ,@(when body-format `(:body-format ,body-format)
             :body ,body
             ,@(when categories `(:categories ,categories))
             :timestamp
