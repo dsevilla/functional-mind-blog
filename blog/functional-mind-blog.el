@@ -8,6 +8,7 @@
 ;;   ) ;"COM.GIGAMONKEYS.PATHNAMES")
 ;;   )
 
+(declaim (optimize (speed 3) (safety 0) (debug 3)))
 
 ;;; TODO: Maybe all these parameters should form a blog class
 
@@ -508,6 +509,11 @@
     (setf (fmb:post-clean-body post) (fmb:calc-post-clean-body post))
     (setf (fmb:post-description post) (fmb:calc-post-description post))
     post))
+
+
+;; loading of other files & process
+(load-file "./posts-old.el")
+(load-file "./posts.el")
 
 (provide 'functional-mind-blog)
 
