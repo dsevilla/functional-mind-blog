@@ -18,11 +18,11 @@
       filename))
 
 (defun fmb:file-target (filename pagenum)
-  (concat (blog-file-name (page-name filename pagenum))
+  (concat (fmb:blog-file-name (fmb:page-name filename pagenum))
           ".html"))
 
 (defun fmb:page-link-target (filename pagenum)
-  (concat (page-name filename pagenum) ".html"))
+  (concat (fmb:page-name filename pagenum) ".html"))
 
 (defun fmb:generate-page (filename title post-list)
   (do ((pagenum 1 (1+ pagenum))
@@ -31,9 +31,9 @@
        (next-page nil))
       ((not rest-list))
     (multiple-value-bind (lst rest)
-        (split-list rest-list *fmb:posts-per-page*)
+        (fmb:split-list rest-list *fmb:posts-per-page*)
       (let ((rest-list rest))
-        (with-temp-file (file-target filename pagenum)
+        (with-temp-file (fmb:file-target filename pagenum)
                                         ; header
           (insert (fmb:html-theme-header title))
                                         ; content

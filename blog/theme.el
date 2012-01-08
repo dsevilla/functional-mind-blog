@@ -107,7 +107,7 @@ function doSearch()
      (setf tz (/ tz 3600))
      ;(when dst-p
      ;  (incf tz))
-     (format "%d, %02d %s %4d %02d:%02d:%02d GMT%s%d"
+     (format "%s, %02d %s %4d %02d:%02d:%02d GMT%s%d"
              (nth day-of-week *fmb:day-names*) ; 0=Sunday
              day
              (nth (1- month) *fmb:month-names*)
@@ -277,7 +277,7 @@ function doSearch()
 (defvar *fmb:post-content-hash-table* (make-hash-table :test #'equal)
   "Hash table that holds the content of each post to speed up page generation.")
 
-(defun fmb:html-theme-post (post &key comments)
+(defun fmb:html-theme-post (post &optional &key comments)
   (concat
    "<div class=\"post\"><!-- post div -->"
 

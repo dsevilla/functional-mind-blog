@@ -22,7 +22,8 @@
 ;;; search
 (load-file "./search.el")
 
-
+;;; process
+(load-file "./process.el")
 
 (provide 'functional-mind-blog)
 

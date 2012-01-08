@@ -39,45 +39,39 @@
 
   (let ((calc-words-for-posts
          (fmb:update-words-for-all-posts)))
-    (time (progn
-            (generate-all-categories)
-            (classify-posts-by-category)
-            (generate-dates-for-archives)
-            (generate-archive-li)
-            (generate-categories-links)))
+    (fmb:generate-all-categories)
+    (fmb:classify-posts-by-category)
+    (fmb:generate-dates-for-archives)
+    (fmb:generate-archive-li)
+    (fmb:generate-categories-links)
 
 ;;; Generate index.html
-    (format t "Generating index page...~%")
-    (time (generate-page "index" nil *posts*))
+    (message "Generating index page...\n")
+    (fmb:generate-page "index" nil *fmb:posts*)
 
 ;;; Generate posts-pages
-    (format t "Generating post pages...~%")
-    (time (generate-post-pages))
+    (message "Generating post pages...\n")
+    (fmb:generate-post-pages)
 
 ;;; Generate categories pages
-    (format t "Generating categories pages...~%")
-    (time (generate-categories-pages))
+    (message "Generating categories pages...\n")
+    (fmb:generate-categories-pages)
 
 ;;; Generate archives pages
-    (format t "Generating archives pages...~%")
-    (time (generate-archives-pages))
+    (message "Generating archives pages...\n")
+    (fmb:generate-archives-pages)
 
 ;;; Generate RSS
-    (format t "Generating RSS...~%")
-    (time (generate-rss))
+    (message "Generating RSS...\n")
+    (fmb:generate-rss)
 
 ;;; Generate description files
-    (format t "Generating description files...~%")
-    (time (generate-description-files))
+    (message "Generating description files...\n")
+    (fmb:generate-description-files)
 
 ;;; Generate search.js
-    #+sbcl
-    (progn
-      (format t "Waiting for the calculation of words per post...~%")
-      (join-thread calc-words-for-posts))
-
-    (format t "Generating search.js...~%")
-    (time (generate-search-js))
+    (message "Generating search.js...\n")
+    (fmb:generate-search-js)
 
 ;;; Generate Atom... really?
 

@@ -226,21 +226,21 @@
                  title=\"View all posts in %s\" rel=\"category tag\">%s</a>"
             category-name category-name category-name)))
 
-(defun post-categories-links (pst)
+(defun fmb:post-categories-links (pst)
   (declare (post pst))
   (mapconcat #'(lambda (c) (format "%s" c))
-             (mapcar #'fmb:url-for-category (post-categories pst))
+             (mapcar #'fmb:url-for-category (fmb:post-categories pst))
              ", "))
 
 (declaim (inline fmb:post-url))
 (defun fmb:post-url (pst)
   (declare (post pst))
-  (concat *fmb:absolute-url* "/" (post-slug pst) ".html"))
+  (concat *fmb:absolute-url* "/" (fmb:post-slug pst) ".html"))
 
 (declaim (inline fmb:post-internet-url))
 (defun fmb:post-internet-url (pst)
   (declare (post pst))
-  (concat *fmb:blog-internet-url* "/" (post-slug pst) ".html"))
+  (concat *fmb:blog-internet-url* "/" (fmb:post-slug pst) ".html"))
 
 (declaim (inline fmb:archive-file))
 (defun fmb:archive-file (archive-cons)
@@ -309,7 +309,7 @@
   (if *fmb:categories-links*
       *fmb:categories-links*
       (error "Categories links not calculated.")))
-(defun generate-categories-links ()
+(defun fmb:generate-categories-links ()
   (setf
    *fmb:categories-links*
    (multiple-value-bind (max-n-posts min-n-posts)
@@ -320,16 +320,18 @@
      (apply #'concat
             (loop for k being the hash-keys in *fmb:posts-for-category*
                using (hash-value v)
-               collect (format "<a href=\"category-%s.html\"
+               collect
+               (let ((category (downcase (substring (symbol-name k) 1))))
+                 (format "<a href=\"category-%s.html\"
                              title=\"%d topic%s\" rel=\"category tag\"
                              style=\"font-size: %dpx;\">%s</a> "
-                               (downcase k)
+                               category
                                (car v)
                                (if (> (car v) 1) "s" "")
                                (+ 9 (round
                                      (/ (- (car v) min-n-posts)
                                         (/ (- max-n-posts min-n-posts) 10))))
-                               (downcase k)))))))
+                               category)))))))
 
 (declaim (inline fmb:cons-from-post-time))
 (defun fmb:cons-from-post-time (post)
