@@ -315,7 +315,7 @@ mismas. La función queda como sigue:")
 )
         (h:p "donde se elige el fichero " (h:code "img/abc.jpg") " con un
         texto alternativo y con el conjunto de parámetros adicionales,
-        entre ellos el ancho de la imagen. Si se especifica un elemento " (code "anchor") " el código que se genera es el siguiente:")
+        entre ellos el ancho de la imagen. Si se especifica un elemento " (h:code "anchor") " el código que se genera es el siguiente:")
         (h:pre '((:class . "prettyprint lang-lisp"))
 "(blog-img \"abc.jpg\" :anchor \"http://wherever.com\"  :alt \"bah\" :params '((:width . 500)))")
 
@@ -373,7 +373,7 @@ casualidad he visto la versión del gestor de paquetes, "
                        Este programa puede distribuirse libremente bajo
                        los términos de la licencia GNU General Public License
 ")
-           (h:p "El juego de palabras es claro. " (code "pacman") ", de
+           (h:p "El juego de palabras es claro. " (h:code "pacman") ", de
 \"package manager\", y también del conocido juego del comecocos."))
  :categories '(:linux :español :spanish)
  :hours 12

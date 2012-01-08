@@ -72,6 +72,7 @@
             (cons :month month)
             (cons :year year))))
 
+(declaim (inline fmb:time-list))
 (defun fmb:time-list (&optional &key day
                                 &optional &key month
                                 &optional &key year
@@ -79,8 +80,11 @@
                                 &optional &key minutes)
   (or (and day month year)
       (error "day, month, and year must be supplied"))
-  (mapcar #'cons (list :hours :minutes :day :month :year)
-              (list (or hours 0) (or minutes 0) day month year)))
+  (list (cons :hours (or hours 0))
+        (cons :minutes (or minutes 0))
+        (cons :day day)
+        (cons :month month)
+        (cons :year year)))
 
 ;;; http://roeim.net/vetle/docs/cl-webapp-intro/part-1/
 (defstruct fmb:post
@@ -91,7 +95,24 @@
   (categories '(:general))
   (slug nil)
   (body-format :string)
-  (timestamp (fmb:get-actual-time-for-the-post)))
+  day
+  month
+  year
+  (hours 0)
+  (minutes 0)
+  (timestamp '()))
+
+(declaim (inline fmb:post-timestamp))
+(defun fmb:calc-post-timestamp (post)
+  (fmb:time-list :day (fmb:post-day post)
+                 :month
+                 (let ((m (fmb:post-month post)))
+                   (if (symbolp m)
+                       (1+ (position m *fmb:month-symbols*))
+                     m))
+                 :year (fmb:post-year post)
+                 :hours (fmb:post-hours post)
+                 :minutes (fmb:post-minutes post)))
 
 
 (declaim (inline fmb:remove-non-url-chars))
@@ -134,15 +155,15 @@
         slug
         (fmb:empty-post-slug post))))
 
-(defun fmb:calculate-post-slug (post)
-  (let ((fmb:initial-slug (fmb:initial-slug post)))
+(defun fmb:calc-post-slug (post)
+  (let ((initial-slug (fmb:initial-slug post)))
                                         ; First, try to add the empty
                                         ; post slug. This limitates us
                                         ; to posts with the same title
                                         ; the very same day
-    (when (gethash fmb:initial-slug *fmb:post-slug-hash*)
-      (setf fmb:initial-slug
-            (format "%s-%s" fmb:initial-slug (fmb:empty-post-slug post))))
+    (when (gethash initial-slug *fmb:post-slug-hash*)
+      (setf initial-slug
+            (format "%s-%s" initial-slug (fmb:empty-post-slug post))))
                                         ; If still in the hash table,
                                         ; do a hash for all the
                                         ; characters in the post and
@@ -163,12 +184,12 @@
                                         ; gives us a very huge chance
                                         ; of non-repetition and
                                         ; stability.
-    (when (gethash fmb:initial-slug *fmb:post-slug-hash*)
-      (setf fmb:initial-slug
-            (format "%s-%s" fmb:initial-slug (fmb:post-hash post))))
+    (when (gethash initial-slug *fmb:post-slug-hash*)
+      (setf initial-slug
+            (format "%s-%s" initial-slug (fmb:post-hash post))))
                                         ; fill hash table of post
                                         ; slugs to avoid duplicates
-    (setf (gethash fmb:initial-slug *fmb:post-slug-hash*) fmb:initial-slug)))
+    (setf (gethash initial-slug *fmb:post-slug-hash*) initial-slug)))
 
 (defconst *fmb:month-names*
   '("january" "february" "march" "april" "may" "june" "july"
@@ -185,13 +206,12 @@
     "sunday"))
 
 (declaim (inline fmb:month-name))
-(defun fmb:month-name (n) ; month name 1-12.
-  (nth (1- n)
-       *fmb:month-names*))
+(defun fmb:month-name (n) ; 1-12
+  (nth (1- n) *fmb:month-names*))
 
 (defun fmb:post-date-time-string (pst)
   (declare (post pst))
-  (let* ((post-time (post-timestamp pst))
+  (let* ((post-time (fmb:post-timestamp pst))
          (month (cdr (assoc :month post-time))))
     (format "%s %d, %d"
             (downcase (if (numberp month)
@@ -377,13 +397,14 @@
   (declare (optimize speed) (string body))
   (lexical-let ((not-in-angle t)
                 (str-pos 0)
-        (str-len (length body)))
+                (inner-body body)
+                (str-len (length body)))
     (declare (fixnum str-pos str-len))
     #'(lambda ()
         (loop do
            (progn
              (when (>= str-pos str-len) (return nil))
-             (let* ((c (char body str-pos))
+             (let* ((c (aref inner-body str-pos))
                     (d (prog1
                            (cond ((and not-in-angle (not (= ?\< c)))
                                   c)
@@ -405,7 +426,7 @@
         collect j into v)
      'string)))
 
-(defun fmb:calculate-post-clean-body (post)
+(defun fmb:calc-post-clean-body (post)
   (fmb:markup-clean (fmb:post-body post)))
 
 (declaim (inline fmb:string-trim))
@@ -420,7 +441,7 @@
         (concat (substring s 0 (1- n)) "[...]")
       (error s)))) ; smaller
 
-(defun fmb:calculate-post-description (post)
+(defun fmb:calc-post-description (post)
   (fmb:first-n-chars (fmb:post-clean-body post) *fmb:rss-description-length*))
 
 ;; (defun fmb:replace-all (string part replacement &key (test #'char=))
@@ -440,58 +461,38 @@
 
 (declaim (inline fmb:link))
 (defun fmb:link (url anchor &optional title rel)
-  (a (cons (cons :href (replace-regexp-in-string "&" "&amp;" url))
-           (cons (cons :rel (or rel "interesting fmb:link"))
-                 (when title
-                   (cons (cons :title title) nil))))
-           anchor))
+  (h:a (cons (cons :href (replace-regexp-in-string "&" "&amp;" url))
+             (cons (cons :rel (or rel "interesting fmb:link"))
+                   (when title
+                     (cons (cons :title title) nil))))
+       anchor))
 
 (declaim (inline fmb:blog-img))
-(defun fmb:blog-img (img-file &key alt anchor title params)
+(defun fmb:blog-img (img-file &optional &key alt &optional &key anchor &optional &key title &optional &key params)
   (let ((img-html
-         (img
+         (h:img
           (append
            (cons `(:src . ,(format "%s/%s" *fmb:img-internet-url* img-file))
                  (cons `(:alt . ,(if alt alt "Blog image.")) ; alt is obligatory
                        (when title `((:title . ,title)))))
            params))))
     (if anchor
-        (a `((:href . ,anchor)) img-html)
+        (h:a `((:href . ,anchor)) img-html)
         img-html)))
 
 (defmacro __ (&rest rest)
-  `(concat 'string ,@rest))
+  `(concat ,@rest))
 
 (defun fmb:blog-file-name (filename)
   (concatenate 'string *fmb:base-url* "/" filename))
 
-(defun fmb:new-post (title &optional &key body
-                           &optional &key body-format
-                           &optional &key categories
-                           &optional &key year
-                           &optional &key month
-                           &optional &key day
-                           &optional &key hours
-                           &optional &key minutes)
+(defun fmb:new-post (title &rest args)
   "Generate a new post. Increment `*fmb:number-of-posts*', and add it to
   the `*fmb:posts*' list. Finally, for each post, stablish its post
   slug. This is done in the order they are read to be stable in the
   slug generation for posts with the same title, that are always
   assigned a different slug in the same order."
-  (let ((post
-         (apply
-          #'make-fmb:post
-          `(:title ,title
-            ,@(when body-format `(:body-format ,body-format))
-            :body ,body
-            ,@(when categories `(:categories ,categories))
-            :timestamp
-            ,(apply #'fmb:time-list
-                    `(:day ,day
-                           :month ,month
-                           :year ,year
-                           ,@(when hours `(:hours ,hours))
-                           ,@(when minutes `(:minutes ,minutes))))))))
+  (let ((post (apply #'make-fmb:post `(:title ,title ,@args))))
                                         ; Add one post
     (push post *fmb:posts*)
     (incf *fmb:number-of-posts*)
@@ -502,9 +503,10 @@
                                         ; stable slug names when
                                         ; repetitions exist
     ; TODO: see standard initialization for objects
-    (setf (fmb:post-slug post) (fmb:calculate-post-slug post))
-    (setf (fmb:post-clean-body post) (fmb:calculate-post-clean-body post))
-    (setf (fmb:post-description post) (fmb:calculate-post-description post))
+    (setf (fmb:post-timestamp post) (fmb:calc-post-timestamp post))
+    (setf (fmb:post-slug post) (fmb:calc-post-slug post))
+    (setf (fmb:post-clean-body post) (fmb:calc-post-clean-body post))
+    (setf (fmb:post-description post) (fmb:calc-post-description post))
     post))
 
 (provide 'functional-mind-blog)
