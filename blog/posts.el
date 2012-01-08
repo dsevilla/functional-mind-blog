@@ -690,14 +690,14 @@ La función <code>fmb:new-post</code> me permite añadir una entrada al blog. Es
 (fmb:new-post
  "Martina playing, 23 months old"
  :body (__ "<object type=\"application/x-shockwave-flash\" width=\"640\" height=\"480\" data=\"http://www.flickr.com/apps/video/stewart.swf?v=109786\" classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\"> <param name=\"flashvars\" value=\"intl_lang=es-us&photo_secret=bd3e6d1bfc&photo_id=6307578684&flickr_show_info_box=true\"></param> <param name=\"movie\" value=\"http://www.flickr.com/apps/video/stewart.swf?v=109786\"></param> <param name=\"bgcolor\" value=\"#000000\"></param> <param name=\"allowFullScreen\" value=\"true\"></param><embed type=\"application/x-shockwave-flash\" src=\"http://www.flickr.com/apps/video/stewart.swf?v=109786\" bgcolor=\"#000000\" allowfullscreen=\"true\" flashvars=\"intl_lang=es-us&photo_secret=bd3e6d1bfc&photo_id=6307578684&flickr_show_info_box=true\" height=\"480\" width=\"640\"></embed></object>"
-           (p "It is REALLY amazing how fast she learns. At her age, she uses almost all Spanish constructions well, verbs (including irregular ones), nouns, slang expressions, tenses, etc. I used the Harinezumi 2++ for this. It is not very good in interiors, but in B&W gives a nice vintage feeling. For those of you not knowing Spanish, at the end of the video she says something like `Wait for me, I'll be right back'... :)"))
+           (h:p "It is REALLY amazing how fast she learns. At her age, she uses almost all Spanish constructions well, verbs (including irregular ones), nouns, slang expressions, tenses, etc. I used the Harinezumi 2++ for this. It is not very good in interiors, but in B&W gives a nice vintage feeling. For those of you not knowing Spanish, at the end of the video she says something like `Wait for me, I'll be right back'... :)"))
  :categories '(:english :video :martina :black&white :b&w)
  :body-format :string
  :hours 01 :minutes 22 :day  3 :month 11 :year 2011)
 
 (fmb:new-post
  "Impresionado con la cámara del Samsung Galaxy S II"
- :body (__ (p "He hecho una pequeña prueba con un programa de escaneo de documentos y es magnífica la cámara. Con luz artificial ha generado una imagen con una resolución perfecta de mi tarjeta de seguridad social americana, que llevaba mil años (desde el 2002) en mi cartera. La he usado para mirar mi número de seguridad social americano para abrirme una cuenta en Getty Images, que parece que quieren alguna de mis imágenes de Flickr. Todavía no estoy seguro de si venderé alguna, pero por curiosidad he abierto la cuenta. Pongo a continuación un crop al 100% de la imagen:")
+ :body (__ (h:p "He hecho una pequeña prueba con un programa de escaneo de documentos y es magnífica la cámara. Con luz artificial ha generado una imagen con una resolución perfecta de mi tarjeta de seguridad social americana, que llevaba mil años (desde el 2002) en mi cartera. La he usado para mirar mi número de seguridad social americano para abrirme una cuenta en Getty Images, que parece que quieren alguna de mis imágenes de Flickr. Todavía no estoy seguro de si venderé alguna, pero por curiosidad he abierto la cuenta. Pongo a continuación un crop al 100% de la imagen:")
            (fmb:blog-img "ssn.png"))
  :categories '(:photography :android :photo :español :spanish)
  :body-format :string
