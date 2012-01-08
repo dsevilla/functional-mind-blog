@@ -485,7 +485,7 @@
   `(concat ,@rest))
 
 (defun fmb:blog-file-name (filename)
-  (concatenate 'string *fmb:base-url* "/" filename))
+  (concat *fmb:base-url* "/" filename))
 
 (defun fmb:new-post (title &rest args)
   "Generate a new post. Increment `*fmb:number-of-posts*', and add it to
@@ -497,7 +497,6 @@
                                         ; Add one post
     (push post *fmb:posts*)
     (incf *fmb:number-of-posts*)
-
                                         ; Stablish slug. This is done
                                         ; in the correct order (older
                                         ; posts fist) to maintain
