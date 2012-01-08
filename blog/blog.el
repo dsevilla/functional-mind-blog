@@ -58,7 +58,7 @@
   needed as a variable because it is used twice. First to generate the
   pages themselves and then to generate the sidebar list.")
 
-(defvar *fmb:blog-fmb:links* ()
+(defvar *fmb:blog-links* ()
   "List of fmb:links of this blog.")
 
 ;;; Decode time
@@ -202,9 +202,8 @@
     :october :november :december))
 
 (defconst *fmb:day-names*
-  '("monday" "tuesday" "wednesday"
-    "thursday" "friday" "saturday"
-    "sunday"))
+  '("sunday" "monday" "tuesday" "wednesday"
+    "thursday" "friday" "saturday"))
 
 (declaim (inline fmb:month-name))
 (defun fmb:month-name (n) ; 1-12
@@ -227,7 +226,7 @@
                  title=\"View all posts in %s\" rel=\"category tag\">%s</a>"
             category-name category-name category-name)))
 
-(defun post-categories-fmb:links (pst)
+(defun post-categories-links (pst)
   (declare (post pst))
   (mapconcat #'(lambda (c) (format "%s" c))
              (mapcar #'fmb:url-for-category (post-categories pst))
@@ -275,51 +274,51 @@
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
 ;;; a nice blog class
-(defvar *fmb:fmb:all-categories* nil) ; list of all the categories of all posts
+(defvar *fmb:all-categories* nil) ; list of all the categories of all posts
 (defun fmb:all-categories ()
-  (if *fmb:fmb:all-categories*
-      *fmb:fmb:all-categories*
+  (if *fmb:all-categories*
+      *fmb:all-categories*
       (error "Categories not calculated")))
-(defun fmb:generate-fmb:all-categories ()
-  (setf *fmb:fmb:all-categories*
+(defun fmb:generate-all-categories ()
+  (setf *fmb:all-categories*
         (reduce #'(lambda (cat-set post)
-                    (union cat-set (categories post)))
+                    (union cat-set (fmb:post-categories post)))
                 *fmb:posts* :initial-value nil)))
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
 ;;; a nice blog class
-(defvar *fmb:fmb:posts-for-category* (make-hash-table))
+(defvar *fmb:posts-for-category* (make-hash-table))
 (defun fmb:classify-posts-by-category ()
   (map nil #'(lambda (category)
                (let* ((posts
                        (remove-if #'(lambda (post)
-                                      (not (member category (categories post))))
+                                      (not (member category (fmb:post-categories post))))
                                   *fmb:posts*))
                       (l (length posts)))
-                 (setf (gethash category *fmb:fmb:posts-for-category*)
+                 (setf (gethash category *fmb:posts-for-category*)
                        (cons l posts))))
        (fmb:all-categories)))
 
 (defun fmb:posts-for-category (category)
-  (cdr (gethash category *fmb:fmb:posts-for-category*)))
+  (cdr (gethash category *fmb:posts-for-category*)))
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
 ;;; a nice blog class
-(defvar *fmb:categories-fmb:links* nil)
-(defun categories-fmb:links ()
-  (if *fmb:categories-fmb:links*
-      *fmb:categories-fmb:links*
-      (error "Categories fmb:links not calculated.")))
-(defun generate-categories-fmb:links ()
+(defvar *fmb:categories-links* nil)
+(defun fmb:categories-links ()
+  (if *fmb:categories-links*
+      *fmb:categories-links*
+      (error "Categories links not calculated.")))
+(defun generate-categories-links ()
   (setf
-   *fmb:categories-fmb:links*
+   *fmb:categories-links*
    (multiple-value-bind (max-n-posts min-n-posts)
-       (loop for c being the hash-values in *fmb:fmb:posts-for-category*
+       (loop for c being the hash-values in *fmb:posts-for-category*
           maximizing (car c) into max
           minimizing (car c) into min
           finally (return (values max min)))
      (apply #'concat
-            (loop for k being the hash-keys in *fmb:fmb:posts-for-category*
+            (loop for k being the hash-keys in *fmb:posts-for-category*
                using (hash-value v)
                collect (format "<a href=\"category-%s.html\"
                              title=\"%d topic%s\" rel=\"category tag\"
@@ -334,7 +333,7 @@
 
 (declaim (inline fmb:cons-from-post-time))
 (defun fmb:cons-from-post-time (post)
-  (let* ((timestamp (timestamp post))
+  (let* ((timestamp (fmb:post-timestamp post))
          (month (cdr (assoc :month timestamp)))
          (year (cdr (assoc :year timestamp))))
     (cons (if (numberp month)
@@ -509,11 +508,5 @@
     (setf (fmb:post-description post) (fmb:calc-post-description post))
     post))
 
-
-;; loading of other files & process
-(load-file "./posts-old.el")
-(load-file "./posts.el")
-
-(provide 'functional-mind-blog)
 
 ;;; --- end of file ---

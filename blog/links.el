@@ -2,7 +2,7 @@
 ;;;
 
 (defmacro fmb:new-blog-link (url anchor &optional title rel)
-  `(push (link ,url ,anchor ,title ,rel) *fmb:blog-links*))
+  `(push (fmb:link ,url ,anchor ,title ,rel) *fmb:blog-links*))
 
 (fmb:new-blog-link "http://code.google.com/p/emf4cpp/" "EMF4CPP")
 

@@ -1,6 +1,11 @@
 ;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
 
+(declaim (optimize (speed 3) (safety 0) (debug 3)))
+
+(eval-when-compile
+  (require 'cl))
+
 (defconst *fmb:google-header*
 "   <!-- Google Plus -->
    <script type=\"text/javascript\" src=\"https://apis.google.com/js/plusone.js\"></script>
@@ -105,7 +110,7 @@ function doSearch()
      (format "%d, %02d %s %4d %02d:%02d:%02d GMT%s%d"
              (nth day-of-week *fmb:day-names*) ; 0=Sunday
              day
-             (nth month *fmb:month-names*)
+             (nth (1- month) *fmb:month-names*)
              year
              hour
              minute
@@ -278,8 +283,7 @@ function doSearch()
 
    (let* ((slug (fmb:post-slug post))
           (content (gethash slug *fmb:post-content-hash-table*)))
-     (if content
-         content
+     (or content
          (setf (gethash slug *fmb:post-content-hash-table*)
                (concat
                 "<h2 class=\"title\"><a href=\""

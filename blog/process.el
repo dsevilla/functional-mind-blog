@@ -1,57 +1,44 @@
-;;; -*- mode: LISP; syntax: COMMON-LISP; package: dsevilla.blog; base: 10; encoding: utf-8; -*-
+;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
 
-(in-package dsevilla.blog)
+(defun fmb:page-generation-function (post)
+  (fmb:generate-page (fmb:post-slug post)
+                     (fmb:post-title post) (list post)))
 
-(defun page-generation-function (post)
-  (generate-page (format nil "~A" (slug post))
-                 (post-title post) (list post)))
+(defun fmb:generate-post-pages ()
+  (map nil #'fmb:page-generation-function *fmb:posts*))
 
-#+sbcl
-(defun generate-post-pages ()
-  (map nil
-       #'(lambda (post)
-           (make-thread (lambda () (page-generation-function post))))
-       *posts*))
-
-#-sbcl
-(defun generate-post-pages ()
-  (map nil #'page-generation-function *posts*))
-
-(defun generate-categories-pages ()
+(defun fmb:generate-categories-pages ()
   (map nil #'(lambda (category)
-               (let ((name (symbol-name category)))
-                 (generate-page
-                  (format nil "category-~(~A~)" name)
-                  (format nil "Posts of the ~(~A~) category" name)
-                  (posts-for-category category))))
-       (all-categories)))
+               (let ((name (downcase (substring (symbol-name category) 1))))
+                 (fmb:generate-page
+                  (format "category-%s" name)
+                  (format "Posts of the %s category" name)
+                  (fmb:posts-for-category category))))
+       (fmb:all-categories)))
 
-(defun generate-archives-pages ()
+(defun fmb:generate-archives-pages ()
   (map nil #'(lambda (archive-cons)
-               (generate-page
+               (fmb:generate-page
                 (archive-file archive-cons)
-                (format nil "Archives for ~A, ~A"
-                        (month-name (car archive-cons))
+                (format "Archives for %s, %d"
+                        (fmb:month-name (car archive-cons))
                         (cdr archive-cons))
                 (remove-if #'(lambda (post)
                                (not (equal archive-cons
-                                           (cons-from-post-time post))))
-                           *posts*)))
-       *months-years*))
+                                           (fmb:cons-from-post-time post))))
+                           *fmb:posts*)))
+       *fmb:months-years*))
 
-(defun generate-rss ()
-  (generate-rss-page *blog-title* *posts*))
+(defun fmb:generate-rss ()
+  (fmb:generate-rss-page *fmb:blog-title* *fmb:posts*))
 
 (progn
 ;;; Housekeeping. Calculate initial variables & values
-  (format t "Doing pre-calculations...~%")
+  (message "Doing pre-calculations...\n")
 
   (let ((calc-words-for-posts
-         #+sbcl
-          (make-thread (lambda () (update-words-for-all-posts)))
-          #-sbcl
-          (update-words-for-all-posts)))
+         (fmb:update-words-for-all-posts)))
     (time (progn
             (generate-all-categories)
             (classify-posts-by-category)
