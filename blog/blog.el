@@ -221,7 +221,7 @@
             (cdr (assoc :year post-time)))))
 
 (defun fmb:url-for-category (category-sym)
-  (let ((category-name (downcase (symbol-name category-sym))))
+  (let ((category-name (downcase (substring (symbol-name category-sym) 1))))
     (format "<a href=\"category-%s.html\"
                  title=\"View all posts in %s\" rel=\"category tag\">%s</a>"
             category-name category-name category-name)))
@@ -380,19 +380,20 @@
             second
             tz)))
 
-(declaim (inline fmb:fmb:rfc-2822-date-for-post))
-(defun fmb:fmb:rfc-2822-date-for-post (post)
-  (let ((ts (post-timestamp post)))
-    (fmb:rfc-2822-date (encode-time
-                    0
-                    (or (cdr (assoc :minutes ts)) 0)
-                    (or (cdr (assoc :hours ts)) 0)
-                    (cdr (assoc :day ts))
-                    (let ((month2 (cdr (assoc :month ts))))
-                      (if (numberp month2)
-                          month2
-                          (1+ (position month2 *fmb:month-symbols*))))
-                    (cdr (assoc :year ts))))))
+(declaim (inline fmb:rfc-2822-date-for-post))
+(defun fmb:rfc-2822-date-for-post (post)
+  (let ((ts (fmb:post-timestamp post)))
+    (fmb:rfc-2822-date
+     (encode-time
+      0
+      (or (cdr (assoc :minutes ts)) 0)
+      (or (cdr (assoc :hours ts)) 0)
+      (cdr (assoc :day ts))
+      (let ((month2 (cdr (assoc :month ts))))
+        (if (numberp month2)
+            month2
+          (1+ (position month2 *fmb:month-symbols*))))
+      (cdr (assoc :year ts))))))
 
 (declaim (inline fmb:angle-remover-closure))
 (defun fmb:angle-remover-closure (body)

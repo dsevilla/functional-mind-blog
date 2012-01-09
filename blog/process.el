@@ -20,7 +20,7 @@
 (defun fmb:generate-archives-pages ()
   (map nil #'(lambda (archive-cons)
                (fmb:generate-page
-                (archive-file archive-cons)
+                (fmb:archive-file archive-cons)
                 (format "Archives for %s, %d"
                         (fmb:month-name (car archive-cons))
                         (cdr archive-cons))

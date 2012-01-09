@@ -35,26 +35,27 @@
   (concat (fmb:page-name filename pagenum) ".html"))
 
 (defun fmb:generate-page (filename title post-list)
-  (do ((pagenum 1 (1+ pagenum))
-       (rest-list post-list)
-       (prev-page nil)
-       (next-page nil))
-      ((not rest-list))
-    (multiple-value-bind (lst rest)
-        (fmb:split-list rest-list *fmb:posts-per-page*)
-      (let ((rest-list rest))
+  (let ((pagenum 1)
+        (rest-list post-list)
+        prev-page
+        next-page)
+    (while rest-list
+      (multiple-value-bind (lst rest)
+          (fmb:split-list rest-list *fmb:posts-per-page*)
         (with-temp-file (fmb:file-target filename pagenum)
                                         ; header
           (insert (fmb:html-theme-header title))
                                         ; content
-          (setf next-page (when rest-list
-                            (fmb:page-link-target filename (1+ pagenum))))
+          (setf next-page
+                (when rest (fmb:page-link-target filename (1+ pagenum))))
           (insert (fmb:html-theme-content title lst prev-page next-page))
           (setf prev-page (fmb:page-link-target filename pagenum))
                                         ; sidebar
           (insert (fmb:html-theme-sidebar title))
                                         ; footnoteter
-          (insert (fmb:html-theme-footer title)))))))
+          (insert (fmb:html-theme-footer title)))
+        (setf rest-list rest)
+        (incf pagenum)))))
 
 (defun fmb:generate-rss-page (title post-list)
   (with-temp-file (fmb:blog-file-name "rss2.xml")

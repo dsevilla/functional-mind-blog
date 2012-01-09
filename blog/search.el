@@ -72,7 +72,7 @@
       ;; (write-string
       ;;  (format nil "// from the set of posts.~%") file)
       (insert "var posts = { 'postlist' : [")
-      (insert (mapconcat #'(lambda (p) (format "'%s'" (fmb:link-to-post p)))
+      (insert (mapconcat #'(lambda (p) (format "'%s'" (link-to-post p)))
                          *fmb:posts* ",\n"))
       (insert "]};\n\n")
 
@@ -85,7 +85,7 @@
               (format "'%s' : [" k)
               (mapconcat #'(lambda (pn) (format "%d" pn))
                          (reverse v) ", ")
-              "]")))
+              "]\n")))
 
       (insert "};\n"))))
 
