@@ -196,7 +196,7 @@ function doSearch()
                 <ul>
 "
    (apply #'concat
-          (mapcar #'(lambda (link) (li link))
+          (mapcar #'(lambda (link) (h:li link))
                   *fmb:blog-links*))
 "
                </ul>
@@ -373,11 +373,11 @@ function doSearch()
 
    ; previous link?
    (when prev-page
-     (a `((:href . ,prev-page)) "« previous page"))
+     (h:a `((:href . ,prev-page)) "« previous page"))
 
    ; next?
    (when next-page
-     (concat " &#8212; " (a `((:href . ,next-page))
+     (concat " &#8212; " (h:a `((:href . ,next-page))
                             "next page »")))
 
    (when (or prev-page next-page)
