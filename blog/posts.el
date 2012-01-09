@@ -667,10 +667,10 @@ página&hellip; </p>"
 
 
 
-<pre class=\"src src-emacs-lisp\">(<span style=\"color: #6495ed; font-weight: bold;\">define-skeleton</span> <span style=\"color: #87ceeb;\">add-fmb:new-post</span>
+<pre class=\"src src-emacs-lisp\">(<span style=\"color: #6495ed; font-weight: bold;\">define-skeleton</span> <span style=\"color: #87ceeb;\">add-new-post</span>
   <span style=\"color: #32cd32;\">\"Add a new post with the current date and time. Ask for the post title.\"</span>
   <span style=\"color: #32cd32;\">\"Post title: \"</span>
-  <span style=\"color: #32cd32;\">\"(fmb:new-post\"</span> \\n
+  <span style=\"color: #32cd32;\">\"(new-post\"</span> \\n
   &gt; <span style=\"color: #32cd32;\">\"\\\"\"</span> str <span style=\"color: #32cd32;\">\"\\\"\"</span> \\n
   &gt; <span style=\"color: #32cd32;\">\":body \\\"\"</span> _  <span style=\"color: #32cd32;\">\"\\\"\"</span> \\n
   &gt; <span style=\"color: #32cd32;\">\":categories '(:general)\"</span> \\n
@@ -681,7 +681,7 @@ página&hellip; </p>"
 </pre>
 
 <p>
-La función <code>fmb:new-post</code> me permite añadir una entrada al blog. Es código Common Lisp, por lo que se ve que comienza por un parémtesis. El patrón (definido por el macro de Emacs-Lisp <code>define-skeleton</code> después me pregunta por el título de la entrada (el uso de la variable <code>str</code> hace que me pregunte a la hora de insertar el patrón). Después, añade el cuerpo vacío y también la fecha actual de la entrada obtenida de la función de Emacs-Lisp <code>(current-time)</code>. Finalmente, el carácter <code>_</code> indica la posición en la que queda el cursor, con lo que puedo empezar a escribir el cuerpo de la entrada.
+La función <code>new-post</code> me permite añadir una entrada al blog. Es código Common Lisp, por lo que se ve que comienza por un parémtesis. El patrón (definido por el macro de Emacs-Lisp <code>define-skeleton</code> después me pregunta por el título de la entrada (el uso de la variable <code>str</code> hace que me pregunte a la hora de insertar el patrón). Después, añade el cuerpo vacío y también la fecha actual de la entrada obtenida de la función de Emacs-Lisp <code>(current-time)</code>. Finalmente, el carácter <code>_</code> indica la posición en la que queda el cursor, con lo que puedo empezar a escribir el cuerpo de la entrada.
 </p>"
  :categories '(:español :spanish :lisp :emacs :emacs-lisp :skeleton :blog)
  :body-format :string
