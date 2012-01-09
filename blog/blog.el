@@ -465,7 +465,7 @@
 (declaim (inline fmb:link))
 (defun fmb:link (url anchor &optional title rel)
   (h:a (cons (cons :href (replace-regexp-in-string "&" "&amp;" url))
-             (cons (cons :rel (or rel "interesting fmb:link"))
+             (cons (cons :rel (or rel "interesting link"))
                    (when title
                      (cons (cons :title title) nil))))
        anchor))
