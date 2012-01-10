@@ -8,14 +8,14 @@
 ;;   ) ;"COM.GIGAMONKEYS.PATHNAMES")
 ;;   )
 
-(declaim (optimize (speed 3) (safety 0) (debug 3)))
 
 ;;; TODO: Maybe all these parameters should form a blog class
 
 ;;; Blog configuration constants
 
 (eval-when-compile
-  (require 'cl))
+  (require 'cl)
+  (declaim (optimize (speed 3) (safety 0) (debug 3))))
 
 (defconst *fmb:base-url* "fm")
 

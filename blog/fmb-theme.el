@@ -1,10 +1,9 @@
 ;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
 
-(declaim (optimize (speed 3) (safety 0) (debug 3)))
-
 (eval-when-compile
-  (require 'cl))
+  (require 'cl)
+  (declaim (optimize (speed 3) (safety 0) (debug 3))))
 
 (defconst *fmb:google-header*
 "   <!-- Google Plus -->
@@ -101,22 +100,7 @@ function doSearch()
         <meta name=\"generator\" content=\"Fancy Common Lisp code\" />
         <meta name=\"author\" content=\"diego sevilla ruiz\" />
         <meta name=\"last-modified\" content=\""
-   (multiple-value-bind
-         (second minute hour day month year day-of-week dst-p tz)
-     (decode-time)
-     (setf tz (/ tz 3600))
-     ;(when dst-p
-     ;  (incf tz))
-     (format "%s, %02d %s %4d %02d:%02d:%02d GMT%s%d"
-             (nth day-of-week *fmb:day-names*) ; 0=Sunday
-             day
-             (nth (1- month) *fmb:month-names*)
-             year
-             hour
-             minute
-             second
-             (if (> tz 0) "+" "-")
-             tz))
+   (fmb:rfc-2822-date)
 "\" />
         <title>"
    *fmb:blog-title*

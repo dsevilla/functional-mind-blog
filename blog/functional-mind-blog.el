@@ -4,26 +4,26 @@
 
 ;; loading of other files & process
 
-(load-file "./html-opti.el")
-(load-file "./theme.el")
-(load-file "./blog.el")
-(load-file "./posts-old.el")
-(load-file "./posts.el")
+(load "fmb-html-opti")
+(load "fmb-theme")
+(load "fmb-blog")
+(load "fmb-posts-old")
+(load "fmb-posts")
 
 ;;; rss
-(load-file "./rss2.el")
+(load "fmb-rss2")
 
 ;;; pages
-(load-file "./pages.el")
+(load "fmb-pages")
 
 ;;; links
-(load-file "./links.el")
+(load "fmb-links")
 
 ;;; search
-(load-file "./search.el")
+(load "fmb-search")
 
 ;;; process
-(load-file "./process.el")
+(load "fmb-process")
 
 (provide 'functional-mind-blog)
 
