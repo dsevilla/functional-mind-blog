@@ -59,7 +59,7 @@
   pages themselves and then to generate the sidebar list.")
 
 (defvar *fmb:blog-links* ()
-  "List of fmb:links of this blog.")
+  "List of links of this blog.")
 
 (defconst *fmb:month-names*
   '("january" "february" "march" "april" "may" "june" "july"
