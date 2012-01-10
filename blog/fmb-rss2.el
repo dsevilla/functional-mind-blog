@@ -44,12 +44,11 @@
 "</pubDate>
 <dc:creator>diego sevilla</dc:creator>
 "
-(apply #'concat
-       (mapcar #'(lambda (cat)
-                   (format "<category><![CDATA[%s]]></category>\n"
-                           (downcase (symbol-name cat))))
-               (fmb:post-categories post)))
-
+(mapconcat #'(lambda (cat)
+               (format "<category><![CDATA[%s]]></category>"
+                       (downcase (substring (symbol-name cat) 1))))
+           (fmb:post-categories post)
+           "\n")
 "
 <guid isPermaLink=\"false\">" (fmb:post-internet-url post) "</guid>
 <description><![CDATA[" (fmb:post-description post) "]]></description>
