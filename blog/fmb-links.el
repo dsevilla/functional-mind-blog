@@ -9,9 +9,13 @@
 (fmb-new-blog-link "http://www.catedrasaes.org" "Cátedra SAES de la
 Universidad de Murcia")
 
+(fmb-new-blog-link "https://github.com/dsevilla/functional-mind-blog"
+                   "GitHub code for this blog!")
+
 (fmb-new-blog-link "http://neuromancer.inf.um.es/planetmurcia" "Planet Murcia")
 
-(fmb-new-blog-link "http://neuromancer.inf.um.es/blog" "Previous Blog/Blog antiguo")
+(fmb-new-blog-link "http://neuromancer.inf.um.es/blog"
+                   "Previous Blog/Blog antiguo")
 
 (fmb-new-blog-link "http://www.flickr.com/photos/dsevilla" "My Flickr!")
 
