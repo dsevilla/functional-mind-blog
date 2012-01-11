@@ -249,8 +249,8 @@
           (fmb-month-name (car archive-cons))
           (cdr archive-cons)))
 
-(declaim (inline fmb-fmb-archive-file-url))
-(defun fmb-fmb-archive-file-url (archive-cons)
+(declaim (inline fmb-archive-file-url))
+(defun fmb-archive-file-url (archive-cons)
   (fmb-archive-file archive-cons))
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
@@ -266,7 +266,7 @@
                (mapcar
                 #'(lambda (archive-cons)
                     (h:li (h:a `((:href . ,(concat
-                                        (fmb-fmb-archive-file-url archive-cons)
+                                        (fmb-archive-file-url archive-cons)
                                         ".html")))
                            (format "%s %s"
                                    (fmb-month-name (car archive-cons))
