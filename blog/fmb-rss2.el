@@ -2,7 +2,7 @@
 ;;;
 
 ; TODO: maybe in the future this would be a class "rss" instance.
-(defun fmb:rss-header (title)
+(defun fmb-rss-header (title)
   (declare (ignore title))
   (concat
    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -16,12 +16,12 @@
         >
 
 <channel>
-        <title>" *fmb:blog-title* "</title>
-        <atom:link href=\"" *fmb:blog-internet-rss-url* "\" rel=\"self\" type=\"application/rss+xml\" />
-        <link>" *fmb:blog-internet-url* "</link>
-        <description>" *fmb:blog-subtitle* "</description>
+        <title>" *fmb-blog-title* "</title>
+        <atom:link href=\"" *fmb-blog-internet-rss-url* "\" rel=\"self\" type=\"application/rss+xml\" />
+        <link>" *fmb-blog-internet-url* "</link>
+        <description>" *fmb-blog-subtitle* "</description>
         <lastBuildDate>"
-        (fmb:rfc-2822-date)
+        (fmb-rfc-2822-date)
         "</lastBuildDate>
 
         <language>en</language>
@@ -32,39 +32,39 @@
    ))
 
 
-(defun fmb:rss-post (post)
+(defun fmb-rss-post (post)
   (concat
    "<item>
-<title>" (fmb:post-title post) "</title>
+<title>" (fmb-post-title post) "</title>
 
-<link>" (fmb:post-internet-url post) "</link>
-<comments>"  (fmb:post-internet-url post) "#disqus_thread" "</comments>
+<link>" (fmb-post-internet-url post) "</link>
+<comments>"  (fmb-post-internet-url post) "#disqus_thread" "</comments>
 <pubDate>"
-(fmb:rfc-2822-date-for-post post)
+(fmb-rfc-2822-date-for-post post)
 "</pubDate>
 <dc:creator>diego sevilla</dc:creator>
 "
 (mapconcat #'(lambda (cat)
                (format "<category><![CDATA[%s]]></category>"
                        (downcase (substring (symbol-name cat) 1))))
-           (fmb:post-categories post)
+           (fmb-post-categories post)
            "\n")
 "
-<guid isPermaLink=\"false\">" (fmb:post-internet-url post) "</guid>
-<description><![CDATA[" (fmb:post-description post) "]]></description>
-        <content:encoded><![CDATA[" (fmb:post-body post) "]]></content:encoded>
+<guid isPermaLink=\"false\">" (fmb-post-internet-url post) "</guid>
+<description><![CDATA[" (fmb-post-description post) "]]></description>
+        <content:encoded><![CDATA[" (fmb-post-body post) "]]></content:encoded>
 </item>
 "
 ))
 
-(defun fmb:rss-content (title posts)
+(defun fmb-rss-content (title posts)
   (declare (ignore title))
   (apply #'concat
-         (loop for post-string in (mapcar #'fmb:rss-post posts)
-              repeat *fmb:rss-posts-max* ; get the first *rss-posts-max*
+         (loop for post-string in (mapcar #'fmb-rss-post posts)
+              repeat *fmb-rss-posts-max* ; get the first *rss-posts-max*
               collect post-string)))
 
-(defun fmb:rss-footer (title)
+(defun fmb-rss-footer (title)
   (declare (ignore title))
   "</channel>
 </rss>

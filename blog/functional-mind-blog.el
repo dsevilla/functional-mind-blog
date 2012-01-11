@@ -1,7 +1,6 @@
 ;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
 
-
 ;; loading of other files & process
 
 (load "fmb-html-opti")

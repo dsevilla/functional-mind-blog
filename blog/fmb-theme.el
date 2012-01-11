@@ -5,7 +5,7 @@
   (require 'cl)
   (declaim (optimize (speed 3) (safety 0) (debug 3))))
 
-(defconst *fmb:google-header*
+(defconst *fmb-google-header*
 "   <!-- Google Plus -->
    <script type=\"text/javascript\" src=\"https://apis.google.com/js/plusone.js\"></script>
 <link href=\"google-code-prettify/prettify.css\" type=\"text/css\" rel=\"stylesheet\" />
@@ -13,7 +13,7 @@
 <script type=\"text/javascript\" src=\"google-code-prettify/lang-lisp.js\"></script>
 ")
 
-(defconst *fmb:search-scripts*
+(defconst *fmb-search-scripts*
   "
 <script type=\"text/javascript\">
 var search_js_loaded = 0;
@@ -92,7 +92,7 @@ function doSearch()
 ; http://wp-themes.com/zbench/
 
 ; TODO: maybe in the future this would be a class "theme" instance.
-(defun fmb:html-theme-header (title)
+(defun fmb-html-theme-header (title)
   (concat
    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\" dir=\"ltr\" lang=\"en-US\"><head profile=\"http://gmpg.org/xfn/11\">
@@ -100,25 +100,25 @@ function doSearch()
         <meta name=\"generator\" content=\"Fancy Common Lisp code\" />
         <meta name=\"author\" content=\"diego sevilla ruiz\" />
         <meta name=\"last-modified\" content=\""
-   (fmb:rfc-2822-date)
+   (fmb-rfc-2822-date)
 "\" />
         <title>"
-   *fmb:blog-title*
+   *fmb-blog-title*
    (when title
      (format " » %s" title))
    "</title>
                 <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"zbench/style.css\" />
    <link rel=\"alternate\" type=\"application/rss+xml\" title=\""
-   *fmb:blog-title*
+   *fmb-blog-title*
    " » Feed\" href=\"rss2.xml\" />"
-   *fmb:google-header*
-   *fmb:search-scripts*
+   *fmb-google-header*
+   *fmb-search-scripts*
 "</head>
 <body onload=\"prettyPrint()\" class=\"home blog\">
 <div id=\"nav\">
         <div id=\"menus\">
                 <ul><li class=\"current_page_item\"><a href=\""
-   *fmb:blog-internet-url*
+   *fmb-blog-internet-url*
    "\">Blog</a></li></ul>
                 <div class=\"menu\"><ul><li class=\"page_item page-item-2\"><a href=\"page-about.html\" title=\"About\">About</a></li>"
 ;;<li class=\"page_item page-item-46\"><a href=\"http://wp-themes.com/?page_id=46\" title=\"Parent Page\">Parent Page</a><ul class=\"children\"><li class=\"page_item page-item-49\"><a href=\"http://wp-themes.com/?page_id=49\" title=\"Sub-page\">Sub-page</a></li></ul></li>
@@ -132,17 +132,17 @@ function doSearch()
 </div>
 <div id=\"wrapper\">
         <div id=\"header\">             <h1><a href=\""
-   *fmb:blog-internet-url*
+   *fmb-blog-internet-url*
    "\">"
-   *fmb:blog-title*
+   *fmb-blog-title*
    "</a></h1>
                 <h2>"
-   *fmb:blog-subtitle*
+   *fmb-blog-subtitle*
    "</h2>
                 <div class=\"clear\"></div>
                         </div>"))
 
-(defun fmb:html-flickr-sidebar ()
+(defun fmb-html-flickr-sidebar ()
   "<!-- Start of Flickr Badge -->
 <style type=\"text/css\">
 #flickr_badge_source_txt {padding:0; font: 11px Arial, Helvetica, Sans serif; color:#666666;}
@@ -165,7 +165,7 @@ function doSearch()
 <!-- End of Flickr Badge -->
 ")
 
-(defun fmb:html-theme-sidebar (title)
+(defun fmb-html-theme-sidebar (title)
   (declare (ignore title))
   (concat
    "<div id=\"sidebar-border\"> <div id=\"rss_border\"> <div
@@ -181,7 +181,7 @@ function doSearch()
 "
    (apply #'concat
           (mapcar #'(lambda (link) (h:li link))
-                  *fmb:blog-links*))
+                  *fmb-blog-links*))
 "
                </ul>
         </div>
@@ -197,7 +197,7 @@ function doSearch()
                 <h3>flickr!</h3>
                 <ul>
 "
-   (fmb:html-flickr-sidebar)
+   (fmb-html-flickr-sidebar)
    "
                </ul>
         </div>
@@ -205,7 +205,7 @@ function doSearch()
         <div class=\"widget\">
                 <h3>search by tags/categories</h3>
         <ul>"
-   (fmb:categories-links)
+   (fmb-categories-links)
    "    </ul>
         </div>
 
@@ -213,7 +213,7 @@ function doSearch()
                 <h3>archives</h3>
                 <ul>
 "
-   (fmb:archive-li-s)
+   (fmb-archive-li-s)
    "
 </ul>
         </div>
@@ -233,7 +233,7 @@ function doSearch()
 "))
 
 
-(defun fmb:html-disqus-bit (post)
+(defun fmb-html-disqus-bit (post)
   (concat
    "
 <div id=\"disqus_thread\"></div>
@@ -241,10 +241,10 @@ function doSearch()
     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
     var disqus_shortname = 'functionalmind';
 /*   var disqus_identifier = '"
-   (fmb:post-slug post)
+   (fmb-post-slug post)
 "';*/
     var disqus_url = '"
-   (fmb:post-internet-url post)
+   (fmb-post-internet-url post)
 "';
 
     /* * * DON'T EDIT BELOW THIS LINE * * */
@@ -258,39 +258,39 @@ function doSearch()
 <a href=\"http://disqus.com\" class=\"dsq-brlink\">blog comments powered by <span class=\"logo-disqus\">Disqus</span></a>
 "))
 
-(defvar *fmb:post-content-hash-table* (make-hash-table :test #'equal)
+(defvar *fmb-post-content-hash-table* (make-hash-table :test #'equal)
   "Hash table that holds the content of each post to speed up page generation.")
 
-(defun fmb:html-theme-post (post &optional &key comments)
+(defun fmb-html-theme-post (post &optional &key comments)
   (concat
    "<div class=\"post\"><!-- post div -->"
 
-   (let* ((slug (fmb:post-slug post))
-          (content (gethash slug *fmb:post-content-hash-table*)))
+   (let* ((slug (fmb-post-slug post))
+          (content (gethash slug *fmb-post-content-hash-table*)))
      (or content
-         (setf (gethash slug *fmb:post-content-hash-table*)
+         (setf (gethash slug *fmb-post-content-hash-table*)
                (concat
                 "<h2 class=\"title\"><a href=\""
-                (fmb:post-url post)
+                (fmb-post-url post)
                 "\" title=\"Permalink to "
-                (fmb:post-title post)
+                (fmb-post-title post)
                 "\">"
-                (fmb:post-title post)
+                (fmb-post-title post)
                 "</a></h2>
                 <div class=\"post-info-top\">
                         <span class=\"post-info-date\">"
-                (fmb:post-categories-links post)
+                (fmb-post-categories-links post)
                 " &#8212; "
-                (fmb:post-date-time-string post)
+                (fmb-post-date-time-string post)
                 "</span>
                         <span class=\"gotocomments\"><span>
    <a href=\""
-                (fmb:post-url post)
+                (fmb-post-url post)
                 "#disqus_thread\">Comments</a></span></span>
                 </div>
                 <div class=\"clear\"></div>
                 <div class=\"entry\">"
-                (fmb:post-body post)))))
+                (fmb-post-body post)))))
 
    ;;; facebook
    (when comments
@@ -314,7 +314,7 @@ function doSearch()
 
    ;; disqus if specified
    (when comments
-     (fmb:html-disqus-bit post))
+     (fmb-html-disqus-bit post))
 
    "
 </div><!-- END entry -->
@@ -323,7 +323,7 @@ function doSearch()
 ))
 
 
-(defun fmb:html-disqus-footer (title)
+(defun fmb-html-disqus-footer (title)
   (declare (ignore title))
   "
 <!-- Disqus footer -->
@@ -340,7 +340,7 @@ function doSearch()
 </script>
 ")
 
-(defun fmb:html-theme-content (title posts &optional prev-page next-page)
+(defun fmb-html-theme-content (title posts &optional prev-page next-page)
   (declare (ignore title))
   (concat
    "<!-- CONTENT START -->
@@ -349,8 +349,8 @@ function doSearch()
    ; Only one element? I don't use length because that actually has to
    ; count all the elements!
    (if (null (cdr posts))
-       (fmb:html-theme-post (first posts) :comments :yes) ; include comments
-       (apply #'concat (mapcar #'fmb:html-theme-post posts)))
+       (fmb-html-theme-post (first posts) :comments :yes) ; include comments
+       (apply #'concat (mapcar #'fmb-html-theme-post posts)))
 
    (when (or prev-page next-page)
      "<p style=\"float:right;\">")
@@ -370,7 +370,7 @@ function doSearch()
    "</div><!--content-->
 "))
 
-(defun fmb:html-google-analytics-footer (title)
+(defun fmb-html-google-analytics-footer (title)
   (declare (ignore title))
 "
 <!-- google analytics footer -->
@@ -389,7 +389,7 @@ function doSearch()
 </script>
 ")
 
-(defun fmb:html-theme-footer (title)
+(defun fmb-html-theme-footer (title)
   (concat
    "</div><!--wrapper-->
 <div class=\"clear\"></div>
@@ -410,7 +410,7 @@ href=\"http://creativecommons.org/licenses/by-nc/2.0/\">Creative Commons License
         </div>
 </div><!--footer-->
 "
-   (fmb:html-disqus-footer title)
-   (fmb:html-google-analytics-footer title)
+   (fmb-html-disqus-footer title)
+   (fmb-html-google-analytics-footer title)
    "</body></html>
 "))
