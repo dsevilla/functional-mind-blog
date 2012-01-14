@@ -17,58 +17,92 @@
   (require 'cl)
   (declaim (optimize (speed 3) (safety 0) (debug 3))))
 
-(defconst *fmb-base-url* "fm")
+(defstruct fmb-blog
+  base-url  ; base-url, "fm", for instance
+  (absolute-url (concat "/" base-url))
+  site ; www site, http://neuromancer.inf.um.es
+  (internet-url (concat site absolute-url))
+  rss-name
+  (internet-rss-url (concat internet-url "/" rss-name))
+  img-url
+  (internet-img-url (concat internet-url "/" img-url))
+  blog-title
+  blog-subtitle
+  rss-description-length
+  rss-posts-max
+  posts-per-page
+  (post-slug-hash (make-hash-table :test #'equal))
+  posts
+  number-of-posts
+  months-years
+  blog-links
+)
 
-(defconst *fmb-absolute-url* (concat "/" *fmb-base-url*))
+(defvar *the-blog*
+  (make-fmb-blog
+   :base-url "fm"
+   :site "http://neuromancer.inf.um.es"
+   :rss-name "rss2.xml"
+   :img-url "img"
+   :blog-title "Functional Mind"
+   :blog-subtitle "an emacs-lisp and org-mode based blog by diego sevilla"
+   :rss-description-length 400
+   :rss-posts-max 100
+   :posts-per-page 50
+))
 
-(defconst *fmb-blog-internet-url*
-  (concat "http://neuromancer.inf.um.es" *fmb-absolute-url*))
+;; (defconst *fmb-base-url* "fm")
 
-(defconst *fmb-blog-internet-rss-url*
-  (concat *fmb-blog-internet-url* "/rss2.xml"))
+;; (defconst *fmb-absolute-url* (concat "/" *fmb-base-url*))
 
-(defconst *fmb-base-img-url* "img")
-(defconst *fmb-img-internet-url*
-  (concat *fmb-blog-internet-url* "/" *fmb-base-img-url*))
+;; (defconst *fmb-blog-internet-url*
+;;   (concat "http://neuromancer.inf.um.es" *fmb-absolute-url*))
 
-(defconst *fmb-blog-title* "Functional Mind")
-(defconst *fmb-blog-subtitle*
-  "an emacs-lisp and org-mode based blog by diego sevilla")
+;; (defconst *fmb-blog-internet-rss-url*
+;;   (concat *fmb-blog-internet-url* "/rss2.xml"))
 
-(defconst *fmb-rss-description-length* 400
-  "Length of the description string in the RSS.")
+;; (defconst *fmb-base-img-url* "img")
+;; (defconst *fmb-img-internet-url*
+;;   (concat *fmb-blog-internet-url* "/" *fmb-base-img-url*))
 
-(defconst *fmb-rss-posts-max* 100
-  "Number of max posts in the RSS.")
+;; (defconst *fmb-blog-title* "Functional Mind")
+;; (defconst *fmb-blog-subtitle*
+;;   "an emacs-lisp and org-mode based blog by diego sevilla")
 
-(defconst *fmb-posts-per-page* 50
-  "Number of posts per page.")
+;; (defconst *fmb-rss-description-length* 400
+;;   "Length of the description string in the RSS.")
 
-(defvar *fmb-post-slug-hash* (make-hash-table :test #'equal))
+;; (defconst *fmb-rss-posts-max* 100
+;;   "Number of max posts in the RSS.")
 
-(defvar *fmb-posts* ()
-  "List of posts. Will be populated with the entries.")
+;; (defconst *fmb-posts-per-page* 50
+;;   "Number of posts per page.")
 
-(defvar *fmb-number-of-posts* 0
-  "This is used to speed up calculations, to avoid calculating the
-  length of the *fmb-posts* list. Maybe other approaches could have been used.")
+;; (defvar *fmb-post-slug-hash* (make-hash-table :test #'equal))
 
-(defvar *fmb-months-years* ()
-  "List of pairs (month . year) for the posts of this blog. This is
-  needed as a variable because it is used twice. First to generate the
-  pages themselves and then to generate the sidebar list.")
+;; (defvar *fmb-posts* ()
+;;   "List of posts. Will be populated with the entries.")
 
-(defvar *fmb-blog-links* ()
-  "List of links of this blog.")
+;; (defvar *fmb-number-of-posts* 0
+;;   "This is used to speed up calculations, to avoid calculating the
+;;   length of the *fmb-posts* list. Maybe other approaches could have been used.")
+
+;; (defvar *fmb-months-years* ()
+;;   "List of pairs (month . year) for the posts of this blog. This is
+;;   needed as a variable because it is used twice. First to generate the
+;;   pages themselves and then to generate the sidebar list.")
+
+;; (defvar *fmb-blog-links* ()
+;;   "List of links of this blog.")
 
 (defconst *fmb-month-names*
   '("january" "february" "march" "april" "may" "june" "july"
     "august" "september" "october" "november" "december"))
 
 (defconst *fmb-month-symbols*
-  '(:january :february :march :april
-    :may :june :july :august :september
-    :october :november :december))
+  '('january 'february 'march 'april
+    'may 'june 'july 'august 'september
+    'october 'november 'december))
 
 (defconst *fmb-day-names*
   '("sunday" "monday" "tuesday" "wednesday"
@@ -106,9 +140,9 @@
   body
   (description nil)
   clean-body
-  (categories '(:general))
+  (categories '('general))
   (slug nil)
-  (body-format :string)
+  (body-format 'string)
   day
   month
   year
@@ -222,7 +256,7 @@
             (cdr (assoc :year post-time)))))
 
 (defun fmb-url-for-category (category-sym)
-  (let ((category-name (downcase (substring (symbol-name category-sym) 1))))
+  (let ((category-name (downcase (symbol-name category-sym))))
     (format "<a href=\"category-%s.html\"
                  title=\"View all posts in %s\" rel=\"category tag\">%s</a>"
             category-name category-name category-name)))
@@ -265,7 +299,7 @@
         (apply #'concat
                (mapcar
                 #'(lambda (archive-cons)
-                    (h:li (h:a `((:href . ,(concat
+                    (h:li (h:a `(('href . ,(concat
                                         (fmb-archive-file-url archive-cons)
                                         ".html")))
                            (format "%s %s"
@@ -322,7 +356,7 @@
             (loop for k being the hash-keys in *fmb-posts-for-category*
                using (hash-value v)
                collect
-               (let ((category (downcase (substring (symbol-name k) 1))))
+               (let ((category (downcase (symbol-name k))))
                  (format "<a href=\"category-%s.html\"
                              title=\"%d topic%s\" rel=\"category tag\"
                              style=\"font-size: %dpx;\">%s</a> "
@@ -465,10 +499,10 @@
 
 (declaim (inline fmb-link))
 (defun fmb-link (url anchor &optional title rel)
-  (h:a (cons (cons :href (replace-regexp-in-string "&" "&amp;" url))
-             (cons (cons :rel (or rel "interesting link"))
+  (h:a (cons (cons 'href (replace-regexp-in-string "&" "&amp;" url))
+             (cons (cons 'rel (or rel "interesting link"))
                    (when title
-                     (cons (cons :title title) nil))))
+                     (cons (cons 'title title) nil))))
        anchor))
 
 (declaim (inline fmb-blog-img))
@@ -476,12 +510,12 @@
   (let ((img-html
          (h:img
           (append
-           (cons `(:src . ,(format "%s/%s" *fmb-img-internet-url* img-file))
-                 (cons `(:alt . ,(if alt alt "Blog image.")) ; alt is obligatory
-                       (when title `((:title . ,title)))))
+           (cons `('src . ,(format "%s/%s" *fmb-img-internet-url* img-file))
+                 (cons `('alt . ,(if alt alt "Blog image.")) ; alt is obligatory
+                       (when title `(('title . ,title)))))
            params))))
     (if anchor
-        (h:a `((:href . ,anchor)) img-html)
+        (h:a `(('href . ,anchor)) img-html)
         img-html)))
 
 (defmacro __ (&rest rest)

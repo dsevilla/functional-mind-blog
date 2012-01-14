@@ -46,7 +46,7 @@
 "
 (mapconcat #'(lambda (cat)
                (format "<category><![CDATA[%s]]></category>"
-                       (downcase (substring (symbol-name cat) 1))))
+                       (downcase (symbol-name cat))))
            (fmb-post-categories post)
            "\n")
 "

@@ -29,8 +29,7 @@ for HTML.  Return the new, safe, HTML string."
 	 (append (list (format "<%s" (substring (symbol-name tag) 2))) ; h:
                  (mapcar #'(lambda (pair)
 			     (concat (format " %s="
-                                             (substring
-                                              (symbol-name (car pair)) 1))
+                                              (symbol-name (car pair)))
                                      (format "\"%s\"" (cdr pair))))
 			 attribs)
 		 (list ">"))))
@@ -44,7 +43,7 @@ return a new list of the new strings."
   (mapcar #'(lambda (x)
 	      (typecase x
 			(string x)
-			(symbol (substring (symbol-name x) 1)) ;remove the :
+			(symbol (symbol-name x)) ;remove the :
 			(t (format "%s" x))))
           lst))
 

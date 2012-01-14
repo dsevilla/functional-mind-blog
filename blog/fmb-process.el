@@ -10,7 +10,7 @@
 
 (defun fmb-generate-categories-pages ()
   (map nil #'(lambda (category)
-               (let ((name (downcase (substring (symbol-name category) 1))))
+               (let ((name (downcase (symbol-name category))))
                  (fmb-generate-page
                   (format "category-%s" name)
                   (format "Posts of the %s category" name)
