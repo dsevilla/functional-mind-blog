@@ -26,8 +26,8 @@
   (internet-rss-url (concat internet-url "/" rss-name))
   img-url
   (internet-img-url (concat internet-url "/" img-url))
-  blog-title
-  blog-subtitle
+  title
+  subtitle
   rss-description-length
   rss-posts-max
   posts-per-page
@@ -35,7 +35,7 @@
   posts
   number-of-posts
   months-years
-  blog-links
+  links
 )
 
 (defvar *the-blog*
