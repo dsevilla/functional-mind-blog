@@ -41,7 +41,8 @@
         next-page)
     (while rest-list
       (multiple-value-bind (lst rest)
-          (fmb-split-list rest-list *fmb-posts-per-page*)
+          (fmb-split-list rest-list
+                          (fmb-blog-posts-per-page *the-blog*))
         (with-temp-file (fmb-file-target filename pagenum)
                                         ; header
           (insert (fmb-html-theme-header title))
@@ -58,10 +59,8 @@
         (incf pagenum)))))
 
 (defun fmb-generate-rss-page (title post-list)
-  (with-temp-file (fmb-blog-file-name "rss2.xml")
-    ; header
-    (insert (fmb-rss-header title))
-    ; content
-    (insert (fmb-rss-content title post-list))
-    ; footer
-    (insert (fmb-rss-footer title))))
+  (with-temp-file (fmb-blog-file-name (fmb-blog-rss-name *the-blog*))
+    (insert (fmb-rss-header title) ; header
+            (fmb-rss-content title post-list) ; content
+            (fmb-rss-footer title)))) ; footer
+

@@ -61,7 +61,7 @@
   (declare (ignore title))
   (apply #'concat
          (loop for post-string in (mapcar #'fmb-rss-post posts)
-              repeat (fmb-rss-posts-max *the-blog*) ; get the first *rss-posts-max*
+              repeat (fmb-blog-rss-posts-max *the-blog*) ; get the first *rss-posts-max*
               collect post-string)))
 
 (defun fmb-rss-footer (title)

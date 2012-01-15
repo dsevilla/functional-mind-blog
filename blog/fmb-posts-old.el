@@ -10633,7 +10633,7 @@ Processed event 2: abcdef.
 <p>Un último apunte. Las diferencias con los actores de otros lenguajes dinámicos (Scala, por ejemplo), son que en estos lenguajes se puede especificar un procesado basado en máquinas de estados, como por ejemplo, cuando se recibe el evento 1, después sólo se puede recibir el evento 2. Esta máquina de estados se puede implementar. Es una primera implementación de prueba.</p>
 <p>No dudéis en contactar conmigo para ideas o comentarios.
 </p>"
-:categories (:c++ :programming :spanish :español)
+:categories (c++ programming spanish español)
 :day 9
 :month 2
 :year 2011)
@@ -10650,7 +10650,7 @@ De hace algunos meses.</p>
 <p>Lipca Rollop Ennit 8cm/2.8 + Fuji Neopan 400cn
 </p>
 "
-          :categories (:family :photography :spanish :español)
+          :categories (family photography spanish español)
           :day 5
           :month 5
           :year 2011)

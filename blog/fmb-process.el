@@ -28,7 +28,7 @@
                                (not (equal archive-cons
                                            (fmb-cons-from-post-time post))))
                            (fmb-blog-posts *the-blog*))))
-       *fmb-months-years*))
+       (fmb-blog-months-years *the-blog*)))
 
 (defun fmb-generate-rss ()
   (fmb-generate-rss-page (fmb-blog-title *the-blog*)

@@ -258,17 +258,14 @@ function doSearch()
 <a href=\"http://disqus.com\" class=\"dsq-brlink\">blog comments powered by <span class=\"logo-disqus\">Disqus</span></a>
 "))
 
-(defvar *fmb-post-content-hash-table* (make-hash-table :test #'equal)
-  "Hash table that holds the content of each post to speed up page generation.")
-
 (defun fmb-html-theme-post (post &optional &key comments)
   (concat
    "<div class=\"post\"><!-- post div -->"
 
    (let* ((slug (fmb-post-slug post))
-          (content (gethash slug *fmb-post-content-hash-table*)))
+          (content (gethash slug (fmb-blog-content-hash *the-blog*))))
      (or content
-         (setf (gethash slug *fmb-post-content-hash-table*)
+         (setf (gethash slug (fmb-blog-content-hash *the-blog*))
                (concat
                 "<h2 class=\"title\"><a href=\""
                 (fmb-post-url post)
@@ -340,7 +337,9 @@ function doSearch()
 </script>
 ")
 
-(defun fmb-html-theme-content (title posts &optional prev-page next-page)
+(defun fmb-html-theme-content (title posts
+                                     &optional prev-page
+                                     &optional next-page)
   (declare (ignore title))
   (concat
    "<!-- CONTENT START -->
@@ -357,11 +356,11 @@ function doSearch()
 
    ; previous link?
    (when prev-page
-     (h:a `(('href . ,prev-page)) "« previous page"))
+     (h:a `((href . ,prev-page)) "« previous page"))
 
    ; next?
    (when next-page
-     (concat " &#8212; " (h:a `(('href . ,next-page))
+     (concat " &#8212; " (h:a `((href . ,next-page))
                             "next page »")))
 
    (when (or prev-page next-page)

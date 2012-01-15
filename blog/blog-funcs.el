@@ -6,8 +6,8 @@
   "(fmb-new-post" \n
   > "\"" str "\"" \n
   > ":body \"" _  "\"" \n
-  > ":categories '(:general)" \n
-  > ":body-format :string" \n
+  > ":categories '(general)" \n
+  > ":body-format 'string" \n
   > (format-time-string
      ":hours %H :minutes %M :day %e :month %m :year %Y)"
      (current-time)) \n )

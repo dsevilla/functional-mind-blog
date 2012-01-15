@@ -11,7 +11,7 @@
           años después sigue vivo, y sinceramente, es una maravilla
           aprenderlo y usarlo. Iré mostrando en el futuro cómo se
           genera.")
- :categories '('general 'lisp 'common-lisp 'spanish 'español)
+ :categories '(general lisp common-lisp spanish español)
  :day 13
  :month 'september
  :year 2011)
@@ -26,7 +26,7 @@
  pero eso es sencillo una vez que lo tengo todo funcionando. Como cada
  entrada es un fichero de texto, añadiré también macros de Emacs para
  generar enlaces con macros...")
- :categories '('general 'español 'spanish)
+ :categories '(general español spanish)
  :day 18
  :month 'september
  :year 2011)
@@ -35,7 +35,7 @@
  "Ya funcionan los archivos"
  :body (h:p "No un gran logro, pero ya funcionan.")
  :day 20
- :categories '('general 'blog)
+ :categories '(general blog)
  :month 'september
  :year 2011)
 
@@ -45,7 +45,7 @@
         (h:p "Sólo por curiosidad, he aquí cómo está
 implementada la generación de los links con diferente tamaño del "
            (h:em "sidebar") ":")
-        (h:pre '(('class . "prettyprint lang-lisp"))
+        (h:pre '((class . "prettyprint lang-lisp"))
          "(defun categories-links ()
   (if *categories-links*
       *categories-links*
@@ -67,7 +67,7 @@ implementada la generación de los links con diferente tamaño del "
                                       (/ (- max-n-posts min-n-posts) 10)))))))))))")
         (h:p "Y eso sin contar con el cálculo de "
            (h:code "*posts-for-category*") "."))
- :categories '('general 'blog 'español 'spanish 'common-lisp 'lisp 'programming)
+ :categories '(general blog español spanish common-lisp lisp programming)
  :day 20
  :month 'september
  :year 2011)
@@ -75,13 +75,13 @@ implementada la generación de los links con diferente tamaño del "
 (fmb-new-post
  "Fiestas en Mula"
  :body (h:p "Me alegro de que mi amigo Pedro Aurelio continúe su blog. En la "
-          (h:a '(('href .
+          (h:a '((href .
                 "http://pallamasjimenez.blogspot.com/2011/09/campanas.html"))
              "última entrada de su blog") ", aparte del sentimiento
 religioso, que en mi caso es nulo, sí que echo de menos sentir el
 sonido de mi pueblo, poder pasear tranquilamente por él... ¡No dudéis en
 acercaros a Mula del 19 al 25 de septiembre!")
- :categories '('general 'friends 'español 'spanish)
+ :categories '(general friends español spanish)
  :hours 22
  :minutes 0
  :day 21
@@ -96,7 +96,7 @@ instrucciones del README de la página "
            "http://code.google.com/p/google-code-prettify/"
            "de google-code-prettify")
           " y ya está.")
- :categories '('general 'blog 'español 'spanish 'common-lisp 'lisp 'programming)
+ :categories '(general blog español spanish common-lisp lisp programming)
  :hours 22
  :minutes 40
  :day 23
@@ -130,7 +130,7 @@ tenía, pero no me ha llevado mucho (una media hora). En parte ha sido
 más complejo porque Common-Lisp no tiene una operación para partir una
 lista (la de las entradas) eficientemente, y he tenido que hacerla
 yo. No es muy compleja, pero tampoco trivial si quieres hacerla eficiente."))
- :categories '('general 'blog 'español 'spanish)
+ :categories '(general blog español spanish)
  :hours 21
  :minutes 16
  :day 27
@@ -150,7 +150,7 @@ debería ser, por ejemplo, debería existir, como en Clojure, un "
            " pero la verdad es que no hay, sólo hilos
 tradicionales... La ventaja, sin embargo, será grande, ya que todas
 las páginas se pueden generar en paralelo.")
- :categories '('blog 'español 'programming 'common-lisp 'lisp 'spanish)
+ :categories '(blog español programming common-lisp lisp spanish)
  :hours 0
  :minutes 27
  :day 29
@@ -278,7 +278,7 @@ RSS, mientras que sbcl tarda 0,08 segundos (un orden de magnitud
 menos). Estudiaré el código para ver dónde puede estar el problema,
 pero por ahora, usaré clisp para generar el blog, aunque use sbcl, con
 el magnífico entorno Slime para Emacs para seguir programando y probando."))
- :categories '('blog 'español 'programming 'common-lisp 'lisp 'spanish)
+ :categories '(blog español programming common-lisp lisp spanish)
  :hours 16
  :minutes 17
  :day 29
@@ -292,16 +292,16 @@ el magnífico entorno Slime para Emacs para seguir programando y probando."))
 una pequeña función que hace más sencillo introducir fácilmente las
 imágenes con la ruta por defecto, y, si procede, un enlace para las
 mismas. La función queda como sigue:")
-           (h:pre '(('class . "prettyprint lang-lisp"))
+           (h:pre '((class . "prettyprint lang-lisp"))
                 "(defun blog-img (img-file &amp;key alt anchor title params)
   (let* ((param-list
-          (cons `('src . ,(format nil \"~A/~A\" *base-img-url* img-file))
-                (cons `('alt . ,(if alt alt \"Blog image.\")) ; alt is obligatory
-                      (when title `(('title . ,title))))))
+          (cons `(src . ,(format nil \"~A/~A\" *base-img-url* img-file))
+                (cons `(alt . ,(or alt \"Blog image.\")) ; alt is obligatory
+                      (when title `((title . ,title))))))
          (param-list-1 (append param-list params))
          (img-html (img param-list-1)))
     (if anchor
-        (a `(('href . ,anchor)) img-html)
+        (a `((href . ,anchor)) img-html)
         img-html)))
 ")
         (h:p "¿No es bonito? En particular me gusta el uso
@@ -309,19 +309,19 @@ mismas. La función queda como sigue:")
         y " (h:code "a") " generan el HTML para las imágenes y para los
         enlaces, respectivamente. Un ejemplo de uso de esa función
         sería:")
-        (h:pre '(('class . "prettyprint lang-lisp"))
+        (h:pre '((class . "prettyprint lang-lisp"))
              "(blog-img \"abc.jpg\" :alt \"Alt text\" :params '((:width . 500)))
 "
 )
         (h:p "donde se elige el fichero " (h:code "img/abc.jpg") " con un
         texto alternativo y con el conjunto de parámetros adicionales,
         entre ellos el ancho de la imagen. Si se especifica un elemento " (h:code "anchor") " el código que se genera es el siguiente:")
-        (h:pre '(('class . "prettyprint lang-lisp"))
+        (h:pre '((class . "prettyprint lang-lisp"))
 "(blog-img \"abc.jpg\" 'anchor \"http://wherever.com\"  'alt \"bah\" 'params '(('width . 500)))")
 
-        (h:pre '(('class . "prettyprint")) "
+        (h:pre '((class . "prettyprint")) "
 &lt;A HREF=\"http://wherever.com\"&gt;&lt;IMG SRC=\"img/abc.jpg\" ALT=\"bah\" WIDTH=\"500\"&gt;&lt;/IMG&gt;&lt;/A&gt;"))
- :categories '('general 'blog 'español 'spanish 'common-lisp 'lisp 'programming)
+ :categories '(general blog español spanish common-lisp lisp programming)
  :hours 0
  :minutes 49
  :day 30
@@ -331,7 +331,7 @@ mismas. La función queda como sigue:")
 (fmb-new-post
  "Attitude"
  :body (__ (fmb-blog-img "DSC_0174.jpg") (fmb-blog-img "DSC_0059.jpg"))
- :categories '('family 'photography 'english)
+ :categories '(family photography english)
  :hours 1
  :minutes 11
  :day 30
@@ -350,7 +350,7 @@ entrada la tenéis "
            (fmb-link
             "http://modeling-languages.com/integrating-apis-in-model-driven-engineering/"
             "aquí") ".")
- :categories '('modeling 'spanish 'mde 'español)
+ :categories '(modeling spanish mde español)
  :hours 1
  :minutes 00
  :day 4
@@ -375,7 +375,7 @@ casualidad he visto la versión del gestor de paquetes, "
 ")
            (h:p "El juego de palabras es claro. " (h:code "pacman") ", de
 \"package manager\", y también del conocido juego del comecocos."))
- :categories '('linux 'español 'spanish)
+ :categories '(linux español spanish)
  :hours 12
  :minutes 43
  :day 4
@@ -392,7 +392,7 @@ precalcular la búsqueda y almacenarla en algún sitio, que además, no
 entorpezca con el blog (no tarde más tiempo en cargar, por
 ejemplo). Lo que estoy preparando lo explicaré con tranquilidad. Por
 ahora, valga una muestra de lo que llevo implementado: ")
-           (h:pre '(('class . "prettyprint lang-lisp")) "
+           (h:pre '((class . "prettyprint lang-lisp")) "
 BLOG> (hash-table-count
        *words-to-post-hash*)
 18119
@@ -400,7 +400,7 @@ BLOG> (hash-table-count
                 )
            (h:p "18119 palabras diferentes. Ahora los posts que
 contienen \"corba\", y sus títulos:")
-           (h:pre '(('class . "prettyprint lang-lisp")) "
+           (h:pre '((class . "prettyprint lang-lisp")) "
 BLOG> (gethash \"corba\" *words-to-post-hash*)
 (#&lt;POST {100A12E8A1}> #&lt;POST {100A12E881}> #&lt;POST {100A12E521}>
  #&lt;POST {100A12E4E1}> #&lt;POST {100A12E4C1}> #&lt;POST {100A12E3E1}>
@@ -426,7 +426,7 @@ BLOG> (mapcar #'post-title (gethash \"corba\" *words-to-post-hash*))
 (h:p "Lo cual es, por cierto, una magnífica lista de entradas para esa
 palabra... Esta información también me permitirá añadir al final un
 conjunto de \"posts relacionados\" en cada entrada."))
- :categories '('español 'spanish 'blog 'common-lisp 'lisp 'programming)
+ :categories '(español spanish blog common-lisp lisp programming)
  :hours 2
  :minutes 31
  :day 5
@@ -438,7 +438,7 @@ conjunto de \"posts relacionados\" en cada entrada."))
  "Peggy Lee--It is a Good Day"
  :body (__ (h:p "Siempre me ha gustado esta canción. Curiosamente la utilizan actualmente dos anuncios de la tele. Me sirve también para probar la incrustación de canciones de Grooveshark.")
            "<object width=\"250\" height=\"40\"><param name=\"movie\" value=\"http://grooveshark.com/songWidget.swf\" /><param name=\"wmode\" value=\"window\" /><param name=\"allowScriptAccess\" value=\"always\" /><param name=\"flashvars\" value=\"hostname=cowbell.grooveshark.com&amp;songIDs=27103833&amp;style=metal&amp;p=0\" /><embed src=\"http://grooveshark.com/songWidget.swf\" type=\"application/x-shockwave-flash\" width=\"250\" height=\"40\" flashvars=\"hostname=cowbell.grooveshark.com&amp;songIDs=27103833&amp;style=metal&amp;p=0\" allowScriptAccess=\"always\" wmode=\"window\" /></object>")
- :categories '('español 'spanish 'general 'grooveshark 'music)
+ :categories '(español spanish general grooveshark music)
  :hours 12
  :minutes 36
  :day 6
@@ -448,13 +448,13 @@ conjunto de \"posts relacionados\" en cada entrada."))
 (fmb-new-post
  "Let Over Lambda--50 years of Lisp"
  :body (__ (h:p  "Hoy por casualidad he encontrado esta referencia, "
-               (h:a '(('href . "http://letoverlambda.com/index.cl/guest/chap2.html"))
+               (h:a '((href . "http://letoverlambda.com/index.cl/guest/chap2.html"))
                   "Let Over Lambda, Closures") " de Doug Hoyte. Es
                   curioso que sin haberlo leído antes, la solución que
                   he dado al problema de extraer la descripción de una
                   entrada del blog sin " (h:em "tags") " HTML ha sido
                   así usando un " (h:em "closure") "."))
- :categories '('español 'spanish 'programming 'lisp 'common-lisp 'blog)
+ :categories '(español spanish programming lisp common-lisp blog)
  :hours 23
  :minutes 06
  :day 9
@@ -469,7 +469,7 @@ más que apenar la noticia
 de " (fmb-link "http://www.biobiochile.cl/2011/10/12/muere-dennis-ritchie-padre-del-lenguaje-de-programacion-c-y-el-sistema-operativo-unix.shtml"
                                                "su muerte")
 ". Adiós a un grande de la informática (este sí).")
- :categories '('c 'programming 'español 'spanish)
+ :categories '(c programming español spanish)
  :hours 10
  :minutes 43
  :day 13
@@ -498,7 +498,7 @@ esfuerzos ni para las penas o los placeres excesivos. [...]")
 mierda (con perdón) encima con un sólo párrafo... Incomprensible,
 incluso para la época. Mucho menos para ser considerado un reputado
 filósofo.")  )
- :categories '('filosofía 'mujer 'schopenhauer 'español 'spanish)
+ :categories '(filosofía mujer schopenhauer español spanish)
  :hours 11
  :minutes 39
  :day 13
@@ -509,7 +509,7 @@ filósofo.")  )
  "&quot;Conferencia&quot; &quot;internacional&quot; sobre el futuro de ETA..."
  :body (__ (h:p "¿De verdad alguien se cree esa pantomima? Vergüenza les
  debería dar. Qué burdo espectáculo. Ahora la banda acatará la petición de tan excelso comité.") )
- :categories '('general 'españa 'español 'spanish)
+ :categories '(general españa español spanish)
  :hours 0
  :minutes 56
  :day 18
@@ -542,7 +542,7 @@ filósofo.")  )
  e " (h:code "indicator-multiload") " para que muestre el uso de CPU,
  memoria y red. Al ejecutarlos, se establecen en la barra superior tal
  que así:")
- (fmb-blog-img "unity_bar.png" 'alt "Unity Bar")
+ (fmb-blog-img "unity_bar.png" :alt "Unity Bar")
  (h:p "Por cierto, que en este caso, no me aparece el icono del tiempo,
  ni tampoco el icono de terminar la sesión, que está escondido hacia
  la derecha. Tampoco se pueden mover los iconos, porque el botón
@@ -552,7 +552,7 @@ veo " (fmb-link "http://www.webupd8.org/2011/08/installing-using-classic-gnome-d
 instalando el paquete " (h:code "gnome-session-fallback") " se puede
 seleccionar &quot;GNOME Classic&quot; en gdm o LightDM... Menos
 mal."))
- :categories '('general 'ubuntu 'oneiric 'ocelot 'linux 'español 'spanish)
+ :categories '(general ubuntu oneiric ocelot linux español spanish)
  :hours 1
  :minutes 19
  :day 18
@@ -566,10 +566,10 @@ mal."))
  portada de Público. Además del tributo a las víctimas (con el nombre
  de todas las víctimas), de nuevo apuntaré que me gustan los diseños
  basados en tipografía:"
- (fmb-blog-img "portada_publico.jpg" 'alt "Portada
-Público" 'anchor "http://imagenes.publico-estaticos.es/resources/archivos/2011/10/21/1319151795449portada22pdf.pdf")
+ (fmb-blog-img "portada_publico.jpg" :alt "Portada
+Público" :anchor "http://imagenes.publico-estaticos.es/resources/archivos/2011/10/21/1319151795449portada22pdf.pdf")
 )
- :categories '('general 'españa 'español 'spanish)
+ :categories '(general españa español spanish)
  :hours 2
  :minutes 26
  :day 21
@@ -587,7 +587,7 @@ Público" 'anchor "http://imagenes.publico-estaticos.es/resources/archivos/2011/
           current text with its traduction into English. You know,
           Google Translate fails a fair bit, but it helps, and you
           don't have to write all the slides again..."))
- :categories '('general 'english 'emacs 'lisp 'emacs-lisp 'google-translate 'translate)
+ :categories '(general english emacs lisp emacs-lisp google-translate translate)
  :hours 0
  :minutes 17
  :day 24
@@ -599,7 +599,7 @@ Público" 'anchor "http://imagenes.publico-estaticos.es/resources/archivos/2011/
 :body (h:p "Coincide totalmente con lo que pienso. Os
 dejo " (fmb-link "http://atalaya.blogalia.com/historias/70546" "el enlace:
 &quot;Odio a los mártires del rock&quot;" ) ".")
- :categories '('libre 'software 'jobs 'stallman 'español 'spanish)
+ :categories '(libre software jobs stallman español spanish)
  :hours 12
  :minutes 20
  :day 24
@@ -617,7 +617,7 @@ Lisp lo es de los funcionales. Con esos dos lenguajes casi cubrimos el
 de periódicos... Os dejo un enlace
 al " (fmb-link "http://t.co/oxjiRip7" "artículo original de LISP") ".")
  (fmb-blog-img "john-mccarthy-programming-wrong.jpg" 'alt "McCarthy"))
- :categories '('lisp 'mccarthy 'programming 'español 'spanish)
+ :categories '(lisp mccarthy programming español spanish)
  :hours 23
  :minutes 45
  :day 24
@@ -654,7 +654,7 @@ escribo en formato org y llamar a esa función
 HTML, incluso el trozo de código anterior, con coloreado de sintaxis
 que no necesita del embellecedor de código JavaScript de la
 página&hellip; </p>"
- :categories '('español 'spanish 'lisp 'emacs 'org-mode 'org 'blog)
+ :categories '(español spanish lisp emacs org-mode org blog)
  :body-format 'string
  :hours 01 :minutes 53 :day 29 :month 10 :year 2011)
 
@@ -683,7 +683,7 @@ página&hellip; </p>"
 <p>
 La función <code>new-post</code> me permite añadir una entrada al blog. Es código Common Lisp, por lo que se ve que comienza por un parémtesis. El patrón (definido por el macro de Emacs-Lisp <code>define-skeleton</code> después me pregunta por el título de la entrada (el uso de la variable <code>str</code> hace que me pregunte a la hora de insertar el patrón). Después, añade el cuerpo vacío y también la fecha actual de la entrada obtenida de la función de Emacs-Lisp <code>(current-time)</code>. Finalmente, el carácter <code>_</code> indica la posición en la que queda el cursor, con lo que puedo empezar a escribir el cuerpo de la entrada.
 </p>"
- :categories '('español 'spanish 'lisp 'emacs 'emacs-lisp 'skeleton 'blog)
+ :categories '(español spanish lisp emacs emacs-lisp skeleton blog)
  :body-format 'string
  :hours 02 :minutes 20 :day 29 :month 10 :year 2011)
 
@@ -691,7 +691,7 @@ La función <code>new-post</code> me permite añadir una entrada al blog. Es có
  "Martina playing, 23 months old"
  :body (__ "<object type=\"application/x-shockwave-flash\" width=\"640\" height=\"480\" data=\"http://www.flickr.com/apps/video/stewart.swf?v=109786\" classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\"> <param name=\"flashvars\" value=\"intl_lang=es-us&photo_secret=bd3e6d1bfc&photo_id=6307578684&flickr_show_info_box=true\"></param> <param name=\"movie\" value=\"http://www.flickr.com/apps/video/stewart.swf?v=109786\"></param> <param name=\"bgcolor\" value=\"#000000\"></param> <param name=\"allowFullScreen\" value=\"true\"></param><embed type=\"application/x-shockwave-flash\" src=\"http://www.flickr.com/apps/video/stewart.swf?v=109786\" bgcolor=\"#000000\" allowfullscreen=\"true\" flashvars=\"intl_lang=es-us&photo_secret=bd3e6d1bfc&photo_id=6307578684&flickr_show_info_box=true\" height=\"480\" width=\"640\"></embed></object>"
            (h:p "It is REALLY amazing how fast she learns. At her age, she uses almost all Spanish constructions well, verbs (including irregular ones), nouns, slang expressions, tenses, etc. I used the Harinezumi 2++ for this. It is not very good in interiors, but in B&W gives a nice vintage feeling. For those of you not knowing Spanish, at the end of the video she says something like `Wait for me, I'll be right back'... :)"))
- :categories '('english 'video 'martina 'black&white 'b&w)
+ :categories '(english video martina black&white b&w)
  :body-format 'string
  :hours 01 :minutes 22 :day  3 :month 11 :year 2011)
 
@@ -699,6 +699,6 @@ La función <code>new-post</code> me permite añadir una entrada al blog. Es có
  "Impresionado con la cámara del Samsung Galaxy S II"
  :body (__ (h:p "He hecho una pequeña prueba con un programa de escaneo de documentos y es magnífica la cámara. Con luz artificial ha generado una imagen con una resolución perfecta de mi tarjeta de seguridad social americana, que llevaba mil años (desde el 2002) en mi cartera. La he usado para mirar mi número de seguridad social americano para abrirme una cuenta en Getty Images, que parece que quieren alguna de mis imágenes de Flickr. Todavía no estoy seguro de si venderé alguna, pero por curiosidad he abierto la cuenta. Pongo a continuación un crop al 100% de la imagen:")
            (fmb-blog-img "ssn.png"))
- :categories '('photography 'android 'photo 'español 'spanish)
+ :categories '(photography android photo español spanish)
  :body-format 'string
  :hours 00 :minutes 16 :day 15 :month 11 :year 2011)

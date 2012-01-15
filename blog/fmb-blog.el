@@ -31,11 +31,20 @@
   rss-description-length
   rss-posts-max
   posts-per-page
-  (post-slug-hash (make-hash-table :test #'equal))
+  (posts-for-category (make-hash-table))
+  (slug-hash (make-hash-table :test #'equal))
   posts
-  number-of-posts
+  (number-of-posts 0)
   months-years
   links
+  all-categories ; lists all categories of all posts
+  categories-links
+  archive-li
+                                        ; search
+  (words-to-post-num-hash (make-hash-table :test #'equal))
+  (words-to-post-hash (make-hash-table :test #'equal))
+                                        ; post content
+  (content-hash (make-hash-table :test #'equal))
 )
 
 (defvar *the-blog*
@@ -44,8 +53,8 @@
    :site "http://neuromancer.inf.um.es"
    :rss-name "rss2.xml"
    :img-url "img"
-   :blog-title "Functional Mind"
-   :blog-subtitle "an emacs-lisp and org-mode based blog by diego sevilla"
+   :title "Functional Mind"
+   :subtitle "an emacs-lisp and org-mode based blog by diego sevilla"
    :rss-description-length 400
    :rss-posts-max 100
    :posts-per-page 50
@@ -100,9 +109,9 @@
     "august" "september" "october" "november" "december"))
 
 (defconst *fmb-month-symbols*
-  '('january 'february 'march 'april
-    'may 'june 'july 'august 'september
-    'october 'november 'december))
+  '(january february march april may june july
+    august september october november december))
+
 
 (defconst *fmb-day-names*
   '("sunday" "monday" "tuesday" "wednesday"
@@ -140,7 +149,7 @@
   body
   (description nil)
   clean-body
-  (categories '('general))
+  (categories '(general))
   (slug nil)
   (body-format 'string)
   day
@@ -209,7 +218,7 @@
                                         ; post slug. This limitates us
                                         ; to posts with the same title
                                         ; the very same day
-    (when (gethash initial-slug *fmb-post-slug-hash*)
+    (when (gethash initial-slug (fmb-blog-slug-hash *the-blog*))
       (setf initial-slug
             (format "%s-%s" initial-slug (fmb-empty-post-slug post))))
                                         ; If still in the hash table,
@@ -232,12 +241,12 @@
                                         ; gives us a very huge chance
                                         ; of non-repetition and
                                         ; stability.
-    (when (gethash initial-slug *fmb-post-slug-hash*)
+    (when (gethash initial-slug (fmb-blog-slug-hash *the-blog*))
       (setf initial-slug
             (format "%s-%s" initial-slug (fmb-post-hash post))))
                                         ; fill hash table of post
                                         ; slugs to avoid duplicates
-    (setf (gethash initial-slug *fmb-post-slug-hash*) initial-slug)))
+    (setf (gethash initial-slug (fmb-blog-slug-hash *the-blog*)) initial-slug)))
 
 
 (declaim (inline fmb-month-name))
@@ -289,71 +298,64 @@
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
 ;;; a nice blog class
-(defvar *fmb-archive-li* nil)
 (defun fmb-archive-li-s ()
-  (if *fmb-archive-li* ; already calculated?
-      *fmb-archive-li*
+  (or (fmb-blog-archive-li *the-blog*) ; already calculated?
       (error "Archive-li not calculated!")))
 (defun fmb-generate-archive-li ()
-  (setf *fmb-archive-li*
+  (setf (fmb-blog-archive-li *the-blog*)
         (apply #'concat
                (mapcar
                 #'(lambda (archive-cons)
-                    (h:li (h:a `(('href . ,(concat
-                                        (fmb-archive-file-url archive-cons)
-                                        ".html")))
-                           (format "%s %s"
-                                   (fmb-month-name (car archive-cons))
+                    (h:li (h:a `((href . ,(concat
+                                           (fmb-archive-file-url archive-cons)
+                                           ".html")))
+                               (format "%s %s"
+                                       (fmb-month-name (car archive-cons))
                                    (cdr archive-cons)))))
-                *fmb-months-years*))))
+                (fmb-blog-months-years *the-blog*)))))
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
 ;;; a nice blog class
-(defvar *fmb-all-categories* nil) ; list of all the categories of all posts
 (defun fmb-all-categories ()
-  (if *fmb-all-categories*
-      *fmb-all-categories*
+  (or (fmb-blog-all-categories *the-blog*)
       (error "Categories not calculated")))
 (defun fmb-generate-all-categories ()
-  (setf *fmb-all-categories*
+  (setf (fmb-blog-all-categories *the-blog*)
         (reduce #'(lambda (cat-set post)
                     (union cat-set (fmb-post-categories post)))
-                *fmb-posts* :initial-value nil)))
+                (fmb-blog-posts *the-blog*) :initial-value nil)))
 
-;;; TODO: Convert this in some nice memoizing thing, and/or add it to
-;;; a nice blog class
-(defvar *fmb-posts-for-category* (make-hash-table))
+;;; TODO: Convert this in some nice memoizing thing
 (defun fmb-classify-posts-by-category ()
   (map nil #'(lambda (category)
                (let* ((posts
                        (remove-if #'(lambda (post)
-                                      (not (member category (fmb-post-categories post))))
-                                  *fmb-posts*))
+                                      (not (member category
+                                                   (fmb-post-categories post))))
+                                  (fmb-blog-posts *the-blog*)))
                       (l (length posts)))
-                 (setf (gethash category *fmb-posts-for-category*)
+                 (setf (gethash category (fmb-blog-posts-for-category *the-blog*))
                        (cons l posts))))
        (fmb-all-categories)))
 
 (defun fmb-posts-for-category (category)
-  (cdr (gethash category *fmb-posts-for-category*)))
+  (cdr (gethash category (fmb-blog-posts-for-category *the-blog*))))
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
 ;;; a nice blog class
-(defvar *fmb-categories-links* nil)
 (defun fmb-categories-links ()
-  (if *fmb-categories-links*
-      *fmb-categories-links*
+  (or (fmb-blog-categories-links *the-blog*)
       (error "Categories links not calculated.")))
 (defun fmb-generate-categories-links ()
   (setf
-   *fmb-categories-links*
+   (fmb-blog-categories-links *the-blog*)
    (multiple-value-bind (max-n-posts min-n-posts)
-       (loop for c being the hash-values in *fmb-posts-for-category*
+       (loop for c being the hash-values in (fmb-blog-posts-for-category *the-blog*)
           maximizing (car c) into max
           minimizing (car c) into min
           finally (return (values max min)))
      (apply #'concat
-            (loop for k being the hash-keys in *fmb-posts-for-category*
+            (loop for k being the hash-keys in (fmb-blog-posts-for-category *the-blog*)
                using (hash-value v)
                collect
                (let ((category (downcase (symbol-name k))))
@@ -391,9 +393,10 @@
            (> (car d1) (car d2)))))
 
 (defun fmb-generate-dates-for-archives ()
-  (setf *fmb-months-years*
+  (setf (fmb-blog-months-years *the-blog*)
         (sort (delete-duplicates
-               (loop for p in *fmb-posts* collect (fmb-cons-from-post-time p))
+               (loop for p in (fmb-blog-posts *the-blog*)
+                     collect (fmb-cons-from-post-time p))
                :test #'equal)
               #'fmb-archive-dates-greaterp)))
 
@@ -480,7 +483,8 @@
       (error s)))) ; smaller
 
 (defun fmb-calc-post-description (post)
-  (fmb-first-n-chars (fmb-post-clean-body post) *fmb-rss-description-length*))
+  (fmb-first-n-chars (fmb-post-clean-body post)
+                     (fmb-blog-rss-description-length *the-blog*)))
 
 ;; (defun fmb-replace-all (string part replacement &key (test #'char=))
 ;;   "Returns a new string in which all the occurences of the part
@@ -510,12 +514,14 @@
   (let ((img-html
          (h:img
           (append
-           (cons `('src . ,(format "%s/%s" *fmb-img-internet-url* img-file))
-                 (cons `('alt . ,(if alt alt "Blog image.")) ; alt is obligatory
-                       (when title `(('title . ,title)))))
+           (cons `(src . ,(format "%s/%s"
+                                   (fmb-blog-internet-img-url *the-blog*)
+                                   img-file))
+                 (cons `(alt . ,(or alt "Blog image.")) ; alt is obligatory
+                       (when title `((title . ,title)))))
            params))))
     (if anchor
-        (h:a `(('href . ,anchor)) img-html)
+        (h:a `((href . ,anchor)) img-html)
         img-html)))
 
 (defmacro __ (&rest rest)
@@ -525,15 +531,16 @@
   (concat (fmb-blog-base-url *the-blog*) "/" filename))
 
 (defun fmb-new-post (title &rest args)
-  "Generate a new post. Increment `*fmb-number-of-posts*', and add it to
-  the `*fmb-posts*' list. Finally, for each post, stablish its post
-  slug. This is done in the order they are read to be stable in the
-  slug generation for posts with the same title, that are always
-  assigned a different slug in the same order."
+  "Generate a new post. Increment `*fmb-number-of-posts*', and
+  add it to the `(fmb-blog-posts *the-blog*)' list. Finally, for
+  each post, stablish its post slug. This is done in the order
+  they are read to be stable in the slug generation for posts
+  with the same title, that are always assigned a different slug
+  in the same order."
   (let ((post (apply #'make-fmb-post `(:title ,title ,@args))))
                                         ; Add one post
-    (push post *fmb-posts*)
-    (incf *fmb-number-of-posts*)
+    (push post (fmb-blog-posts *the-blog*))
+    (incf (fmb-blog-number-of-posts *the-blog*))
                                         ; Stablish slug. This is done
                                         ; in the correct order (older
                                         ; posts fist) to maintain
