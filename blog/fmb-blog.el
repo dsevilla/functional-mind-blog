@@ -430,20 +430,35 @@
   (fmb-first-n-chars (fmb-post-clean-body post)
                      (fmb-blog-rss-description-length *the-blog*)))
 
-;; (defun fmb-replace-all (string part replacement &key (test #'char=))
-;;   "Returns a new string in which all the occurences of the part
-;; is replaced with replacement."
-;;   (with-output-to-string (out)
-;;     (loop with part-length = (length part)
-;;        for old-pos = 0 then (+ pos part-length)
-;;        for pos = (search part string
-;;                          :start2 old-pos
-;;                          :test test)
-;;        do (write-string string out
-;;                         :start old-pos
-;;                         :end (or pos (length string)))
-;;        when pos do (write-string replacement out)
-;;        while pos)))
+(declaim (inline fmb-post-date-lessp))
+(defun fmb-post-date-greaterp (p1 p2)
+  (let* ((timestamp1 (fmb-post-timestamp p1))
+         (year1 (cdr (assoc :year timestamp1)))
+         (month1 (cdr (assoc :month timestamp1)))
+         (day1 (cdr (assoc :day timestamp1)))
+         (minutes1 (cdr (assoc :minutes timestamp1)))
+         (hours1 (cdr (assoc :hours timestamp1)))
+         ; 2
+         (timestamp2 (fmb-post-timestamp p2))
+         (year2 (cdr (assoc :year timestamp2)))
+         (month2 (cdr (assoc :month timestamp2)))
+         (day2 (cdr (assoc :day timestamp2)))
+         (minutes2 (cdr (assoc :minutes timestamp2)))
+         (hours2 (cdr (assoc :hours timestamp2))))
+    (or (> year1 year2)
+        (and (= year1 year2)
+             (or (> month1 month2)
+                 (and (= month1 month2)
+                      (or (> day1 day2)
+                          (and (= day1 day2)
+                               (or (> hours1 hours2)
+                                   (and (= hours1 hours2)
+                                        (> minutes1 minutes2)))))))))))
+
+(declaim (inline fmb-sort-posts-by-date))
+(defun fmb-sort-posts-by-date ()
+  (setf (fmb-blog-posts *the-blog*)
+        (sort (fmb-blog-posts *the-blog*) #'fmb-post-date-greaterp)))
 
 (declaim (inline fmb-link))
 (defun fmb-link (url anchor &optional title rel)

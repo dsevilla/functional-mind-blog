@@ -2,7 +2,7 @@
 ;;; List of posts
 
 ;;; include previous posts before us
-(map nil (lambda (l) (apply #'fmb-new-post l)) *fmb-posts-data-old*)
+;(map nil (lambda (l) (apply #'fmb-new-post l)) *fmb-posts-data-old*)
 
 (fmb-new-post
  "¡Primera entrada!"
