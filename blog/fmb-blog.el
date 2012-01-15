@@ -1,18 +1,6 @@
 ;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
 
-;; (defpackage dsevilla.blog
-;;   (:use "COMMON-LISP" "HTML"
-;;         #+sbcl
-;;         :sb-thread
-;;   ) ;"COM.GIGAMONKEYS.PATHNAMES")
-;;   )
-
-
-;;; TODO: Maybe all these parameters should form a blog class
-
-;;; Blog configuration constants
-
 (eval-when-compile
   (require 'cl)
   (declaim (optimize (speed 3) (safety 0) (debug 3))))
@@ -59,50 +47,6 @@
    :rss-posts-max 100
    :posts-per-page 50
 ))
-
-;; (defconst *fmb-base-url* "fm")
-
-;; (defconst *fmb-absolute-url* (concat "/" *fmb-base-url*))
-
-;; (defconst *fmb-blog-internet-url*
-;;   (concat "http://neuromancer.inf.um.es" *fmb-absolute-url*))
-
-;; (defconst *fmb-blog-internet-rss-url*
-;;   (concat *fmb-blog-internet-url* "/rss2.xml"))
-
-;; (defconst *fmb-base-img-url* "img")
-;; (defconst *fmb-img-internet-url*
-;;   (concat *fmb-blog-internet-url* "/" *fmb-base-img-url*))
-
-;; (defconst *fmb-blog-title* "Functional Mind")
-;; (defconst *fmb-blog-subtitle*
-;;   "an emacs-lisp and org-mode based blog by diego sevilla")
-
-;; (defconst *fmb-rss-description-length* 400
-;;   "Length of the description string in the RSS.")
-
-;; (defconst *fmb-rss-posts-max* 100
-;;   "Number of max posts in the RSS.")
-
-;; (defconst *fmb-posts-per-page* 50
-;;   "Number of posts per page.")
-
-;; (defvar *fmb-post-slug-hash* (make-hash-table :test #'equal))
-
-;; (defvar *fmb-posts* ()
-;;   "List of posts. Will be populated with the entries.")
-
-;; (defvar *fmb-number-of-posts* 0
-;;   "This is used to speed up calculations, to avoid calculating the
-;;   length of the *fmb-posts* list. Maybe other approaches could have been used.")
-
-;; (defvar *fmb-months-years* ()
-;;   "List of pairs (month . year) for the posts of this blog. This is
-;;   needed as a variable because it is used twice. First to generate the
-;;   pages themselves and then to generate the sidebar list.")
-
-;; (defvar *fmb-blog-links* ()
-;;   "List of links of this blog.")
 
 (defconst *fmb-month-names*
   '("january" "february" "march" "april" "may" "june" "july"
