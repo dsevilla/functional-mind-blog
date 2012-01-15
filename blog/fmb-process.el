@@ -1,5 +1,15 @@
 ;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
+(eval-when-compile
+  (require 'cl)
+  (require 'fmb-html-opti)
+  (require 'fmb-theme)
+  (require 'fmb-blog)
+  (require 'fmb-posts)
+  (require 'fmb-rss2)
+  (require 'fmb-pages)
+  (require 'fmb-links)
+  (require 'fmb-search))
 
 (defun fmb-page-generation-function (post)
   (fmb-generate-page (fmb-post-slug post)
@@ -34,7 +44,7 @@
   (fmb-generate-rss-page (fmb-blog-title *the-blog*)
                          (fmb-blog-posts *the-blog*)))
 
-(progn
+(defun fmb-do-process ()
 ;;; Housekeeping. Calculate initial variables & values
   (message "Doing pre-calculations...\n")
 
@@ -81,3 +91,5 @@
 
 ;;; PROCESS END
 ))
+
+(provide 'fmb-process)

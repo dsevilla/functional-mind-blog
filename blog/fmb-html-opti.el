@@ -97,4 +97,5 @@ return a new list of the new strings."
 (defun h:br () "<br />")
 (defun h:hr () "<hr />")
 
+(provide 'fmb-html-opti)
 ;;; --- end of file ---

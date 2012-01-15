@@ -3,7 +3,8 @@
 
 (eval-when-compile
   (require 'cl)
-  (declaim (optimize (speed 3) (safety 0) (debug 3))))
+  (require 'fmb-blog)
+  (require 'fmb-html-opti))
 
 (defconst *fmb-google-header*
 "   <!-- Google Plus -->
@@ -413,3 +414,5 @@ href=\"http://creativecommons.org/licenses/by-nc/2.0/\">Creative Commons License
    (fmb-html-google-analytics-footer title)
    "</body></html>
 "))
+
+(provide 'fmb-theme)

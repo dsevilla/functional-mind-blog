@@ -3,7 +3,7 @@
 
 (eval-when-compile
   (require 'cl)
-  (declaim (optimize (speed 3) (safety 0) (debug 3))))
+  (require 'fmb-html-opti))
 
 (defstruct fmb-blog
   base-url  ; base-url, "fm", for instance
@@ -73,7 +73,6 @@
             (cons :month month)
             (cons :year year))))
 
-(declaim (inline fmb-time-list))
 (defun fmb-time-list (&optional &key day
                                 &optional &key month
                                 &optional &key year
@@ -103,7 +102,6 @@
   (minutes 0)
   (timestamp '()))
 
-(declaim (inline fmb-post-timestamp))
 (defun fmb-calc-post-timestamp (post)
   (fmb-time-list :day (fmb-post-day post)
                  :month
@@ -116,7 +114,6 @@
                  :minutes (fmb-post-minutes post)))
 
 
-(declaim (inline fmb-remove-non-url-chars))
 (defun fmb-remove-non-url-chars (string)
   (declare (optimize speed) (string string))
    (coerce
@@ -137,7 +134,6 @@
        when j collect j)
     'string))
 
-(declaim (inline fmb-empty-post-slug))
 (defun fmb-empty-post-slug (post)
   (let ((timestamp (fmb-post-timestamp post)))
     (format "post-%d-%d-%d"
@@ -145,7 +141,6 @@
             (cdr (assoc :month timestamp))
             (cdr (assoc :day timestamp)))))
 
-(declaim (inline fmb-post-hash))
 (defun fmb-post-hash (post)
   (reduce #'+ (fmb-post-body post) :initial-value 0))
 
@@ -193,7 +188,6 @@
     (setf (gethash initial-slug (fmb-blog-slug-hash *the-blog*)) initial-slug)))
 
 
-(declaim (inline fmb-month-name))
 (defun fmb-month-name (n) ; 1-12
   (nth (1- n) *fmb-month-names*))
 
@@ -220,23 +214,19 @@
              (mapcar #'fmb-url-for-category (fmb-post-categories pst))
              ", "))
 
-(declaim (inline fmb-post-url))
 (defun fmb-post-url (pst)
   (declare (post pst))
   (concat (fmb-blog-absolute-url *the-blog*) "/" (fmb-post-slug pst) ".html"))
 
-(declaim (inline fmb-post-internet-url))
 (defun fmb-post-internet-url (pst)
   (declare (post pst))
   (concat (fmb-blog-internet-url *the-blog*) "/" (fmb-post-slug pst) ".html"))
 
-(declaim (inline fmb-archive-file))
 (defun fmb-archive-file (archive-cons)
   (format "archives-%s-%s"
           (fmb-month-name (car archive-cons))
           (cdr archive-cons)))
 
-(declaim (inline fmb-archive-file-url))
 (defun fmb-archive-file-url (archive-cons)
   (fmb-archive-file archive-cons))
 
@@ -314,7 +304,6 @@
                                         (/ (- max-n-posts min-n-posts) 10))))
                                category)))))))
 
-(declaim (inline fmb-cons-from-post-time))
 (defun fmb-cons-from-post-time (post)
   (let* ((timestamp (fmb-post-timestamp post))
          (month (cdr (assoc :month timestamp)))
@@ -324,13 +313,11 @@
               (1+ (position month *fmb-month-symbols*)))
           year)))
 
-(declaim (inline fmb-archive-dates-lessp))
 (defun fmb-archive-dates-lessp (d1 d2)
   (or (< (cdr d1) (cdr d2))
       (and (= (cdr d1) (cdr d2))
            (< (car d1) (car d2)))))
 
-(declaim (inline fmb-archive-dates-greaterp))
 (defun fmb-archive-dates-greaterp (d1 d2)
   (or (> (cdr d1) (cdr d2))
       (and (= (cdr d1) (cdr d2))
@@ -345,7 +332,6 @@
               #'fmb-archive-dates-greaterp)))
 
 ;;; utility
-(declaim (inline fmb-rfc-2822-date))
 (defun fmb-rfc-2822-date (&optional time)
   (multiple-value-bind (second minute hour day month year day-of-week dst-p tz)
       (decode-time time)
@@ -362,7 +348,6 @@
             second
             tz)))
 
-(declaim (inline fmb-rfc-2822-date-for-post))
 (defun fmb-rfc-2822-date-for-post (post)
   (let ((ts (fmb-post-timestamp post)))
     (fmb-rfc-2822-date
@@ -377,7 +362,6 @@
           (1+ (position month2 *fmb-month-symbols*))))
       (cdr (assoc :year ts))))))
 
-(declaim (inline fmb-angle-remover-closure))
 (defun fmb-angle-remover-closure (body)
   (declare (optimize speed) (string body))
   (lexical-let ((not-in-angle t)
@@ -402,7 +386,6 @@
                          (incf str-pos))))
                (when d (return d))))))))
 
-(declaim (inline fmb-markup-clean))
 (defun fmb-markup-clean (string)
   (let ((testp (fmb-angle-remover-closure string)))
     (coerce
@@ -414,12 +397,10 @@
 (defun fmb-calc-post-clean-body (post)
   (fmb-markup-clean (fmb-post-body post)))
 
-(declaim (inline fmb-string-trim))
 (defun fmb-string-trim (s)
   (let ((s1 (replace-regexp-in-string "[ \t]*$" "" s)))
     (replace-regexp-in-string "^[ \t]*" "" s1)))
 
-(declaim (inline fmb-first-n-chars))
 (defun fmb-first-n-chars (string n)
   (let ((s (fmb-string-trim string)))
     (condition-case nil
@@ -430,7 +411,6 @@
   (fmb-first-n-chars (fmb-post-clean-body post)
                      (fmb-blog-rss-description-length *the-blog*)))
 
-(declaim (inline fmb-post-date-greaterp))
 (defun fmb-post-date-greaterp (p1 p2)
   (let* ((timestamp1 (fmb-post-timestamp p1))
          (year1 (cdr (assoc :year timestamp1)))
@@ -455,12 +435,10 @@
                                    (and (= hours1 hours2)
                                         (> minutes1 minutes2)))))))))))
 
-(declaim (inline fmb-sort-posts-by-date))
 (defun fmb-sort-posts-by-date ()
   (setf (fmb-blog-posts *the-blog*)
         (sort (fmb-blog-posts *the-blog*) #'fmb-post-date-greaterp)))
 
-(declaim (inline fmb-link))
 (defun fmb-link (url anchor &optional title rel)
   (h:a (cons (cons 'href (replace-regexp-in-string "&" "&amp;" url))
              (cons (cons 'rel (or rel "interesting link"))
@@ -468,7 +446,6 @@
                      (cons (cons 'title title) nil))))
        anchor))
 
-(declaim (inline fmb-blog-img))
 (defun fmb-blog-img (img-file &optional &key alt
                               &optional &key anchor
                               &optional &key title
@@ -516,4 +493,5 @@
     post))
 
 
+(provide 'fmb-blog)
 ;;; --- end of file ---

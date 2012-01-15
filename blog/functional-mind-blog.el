@@ -1,28 +1,34 @@
 ;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
 
-;; loading of other files & process
+;; recompile the package if not done so previously
+(byte-recompile-directory "." 0) ; 0: compile those .el files without .elc too
 
-(load "fmb-html-opti")
-(load "fmb-theme")
-(load "fmb-blog")
-(load "fmb-posts-old")
-(load "fmb-posts")
+;; loading of other files & process
+(require 'cl)
+
+(require 'fmb-html-opti)
+(require 'fmb-theme)
+(require 'fmb-blog)
+(require 'fmb-posts-old)
+(require 'fmb-posts)
 
 ;;; rss
-(load "fmb-rss2")
+(require 'fmb-rss2)
 
 ;;; pages
-(load "fmb-pages")
+(require 'fmb-pages)
 
 ;;; links
-(load "fmb-links")
+(require 'fmb-links)
 
 ;;; search
-(load "fmb-search")
+(require 'fmb-search)
 
 ;;; process
-(load "fmb-process")
+(require 'fmb-process)
+
+(fmb-do-process)
 
 (provide 'functional-mind-blog)
 

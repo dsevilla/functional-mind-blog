@@ -2,15 +2,10 @@
 ;;;
 
 (eval-when-compile
-  (require 'cl))
-
-;; (defun fmb-split-list (l length)
-;;   "Returns two values, the first `length' elements of the list, and the
-;;   pointer to the cdr of that list, or the remaining elements of `l' if
-;;   the length of l is less or equal `length'."
-;;   (loop repeat length
-;;      for x on l append (list (car x)) into v
-;;      finally (return (values v (cdr x)))))
+  (require 'cl)
+  (require 'fmb-rss2)
+  (require 'fmb-theme)
+  (require 'fmb-blog))
 
 ;; unfortunately the above function doesn't work in emacs-lisp, so we have
 ;; to revert to this much more inefficient version
@@ -64,3 +59,4 @@
             (fmb-rss-content title post-list) ; content
             (fmb-rss-footer title)))) ; footer
 
+(provide 'fmb-pages)

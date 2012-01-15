@@ -1,5 +1,10 @@
 ;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
+(eval-when-compile
+  (require 'cl)
+  (require 'fmb-html-opti)
+  (require 'fmb-blog))
+
 (defconst *fmb-not-word-chars*
   '(?\. ?\[ ?\] ?\, ?\( ?\) ?\\ ?\" ?\' ?\« ?\» ?\! ?\? ?\¡
         ?\¿ ?\~ ?\= ?\* ?\$ ?\# ?\< ?\> ?\{ ?\} ?\& ?\| ?\: ?\;))
@@ -50,10 +55,10 @@
       ;;  (format nil "// search.js for functional mind. Generated statically~%") file)
       ;; (write-string
       ;;  (format nil "// from the set of posts.~%") file)
-      (insert "var posts = { 'postlist' : [")
-      (insert (mapconcat #'(lambda (p) (format "'%s'" (link-to-post p)))
-                         (fmb-blog-posts *the-blog*) ",\n"))
-      (insert "]};\n\n")
+      (insert "var posts = { 'postlist' : ["
+              (mapconcat #'(lambda (p) (format "'%s'" (link-to-post p)))
+                         (fmb-blog-posts *the-blog*) ",\n")
+              "]};\n\n")
 
       (insert "var posts_for_word = {\n")
 
@@ -76,4 +81,5 @@
                   "\n" ""
                   (fmb-first-n-chars (fmb-post-description p) 50))))))
 
+(provide 'fmb-search)
 ;;; end of file

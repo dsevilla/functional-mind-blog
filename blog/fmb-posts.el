@@ -1,8 +1,13 @@
 ;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;; List of posts
 
+(eval-when-compile
+  (require 'fmb-html-opti)
+  (require 'fmb-blog)
+  (require 'fmb-posts-old))
+
 ;;; include previous posts before us
-;(map nil (lambda (l) (apply #'fmb-new-post l)) *fmb-posts-data-old*)
+(map nil (lambda (l) (apply #'fmb-new-post l)) *fmb-posts-data-old*)
 
 (fmb-new-post
  "¡Primera entrada!"
@@ -702,3 +707,5 @@ La función <code>new-post</code> me permite añadir una entrada al blog. Es có
  :categories '(photography android photo español spanish)
  :body-format 'string
  :hours 00 :minutes 16 :day 15 :month 11 :year 2011)
+
+(provide 'fmb-posts)

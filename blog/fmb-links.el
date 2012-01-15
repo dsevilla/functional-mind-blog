@@ -1,5 +1,8 @@
 ;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
+(eval-when-compile
+  (require 'cl)
+  (require 'fmb-blog))
 
 (defmacro fmb-new-blog-link (url anchor &optional title &optional rel)
   `(push (fmb-link ,url ,anchor ,title ,rel)
@@ -24,3 +27,4 @@ Universidad de Murcia")
 
 (fmb-new-blog-link "mailto:dsevilla@ditec.um.es" "e-mail/contact")
 
+(provide 'fmb-links)

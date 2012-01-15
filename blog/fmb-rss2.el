@@ -1,6 +1,10 @@
 ;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
 
+(eval-when-compile
+  (require 'cl)
+  (require 'fmb-blog))
+
 ; TODO: maybe in the future this would be a class "rss" instance.
 (defun fmb-rss-header (title)
   (declare (ignore title))
@@ -69,3 +73,5 @@
   "</channel>
 </rss>
 ")
+
+(provide 'fmb-rss2)
