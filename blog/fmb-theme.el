@@ -103,13 +103,13 @@ function doSearch()
    (fmb-rfc-2822-date)
 "\" />
         <title>"
-   *fmb-blog-title*
+   (fmb-blog-title *the-blog*)
    (when title
      (format " » %s" title))
    "</title>
                 <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"zbench/style.css\" />
    <link rel=\"alternate\" type=\"application/rss+xml\" title=\""
-   *fmb-blog-title*
+   (fmb-blog-title *the-blog*)
    " » Feed\" href=\"rss2.xml\" />"
    *fmb-google-header*
    *fmb-search-scripts*
@@ -118,7 +118,7 @@ function doSearch()
 <div id=\"nav\">
         <div id=\"menus\">
                 <ul><li class=\"current_page_item\"><a href=\""
-   *fmb-blog-internet-url*
+   (fmb-blog-internet-url *the-blog*)
    "\">Blog</a></li></ul>
                 <div class=\"menu\"><ul><li class=\"page_item page-item-2\"><a href=\"page-about.html\" title=\"About\">About</a></li>"
 ;;<li class=\"page_item page-item-46\"><a href=\"http://wp-themes.com/?page_id=46\" title=\"Parent Page\">Parent Page</a><ul class=\"children\"><li class=\"page_item page-item-49\"><a href=\"http://wp-themes.com/?page_id=49\" title=\"Sub-page\">Sub-page</a></li></ul></li>
@@ -132,12 +132,12 @@ function doSearch()
 </div>
 <div id=\"wrapper\">
         <div id=\"header\">             <h1><a href=\""
-   *fmb-blog-internet-url*
+   (fmb-blog-internet-url *the-blog*)
    "\">"
-   *fmb-blog-title*
+   (fmb-blog-title *the-blog*)
    "</a></h1>
                 <h2>"
-   *fmb-blog-subtitle*
+   (fmb-blog-subtitle *the-blog*)
    "</h2>
                 <div class=\"clear\"></div>
                         </div>"))
@@ -181,7 +181,7 @@ function doSearch()
 "
    (apply #'concat
           (mapcar #'(lambda (link) (h:li link))
-                  *fmb-blog-links*))
+                  (fmb-blog-links *the-blog*)))
 "
                </ul>
         </div>
@@ -349,7 +349,7 @@ function doSearch()
    ; Only one element? I don't use length because that actually has to
    ; count all the elements!
    (if (null (cdr posts))
-       (fmb-html-theme-post (first posts) :comments :yes) ; include comments
+       (fmb-html-theme-post (first posts) :comments 'yes) ; include comments
        (apply #'concat (mapcar #'fmb-html-theme-post posts)))
 
    (when (or prev-page next-page)
@@ -357,11 +357,11 @@ function doSearch()
 
    ; previous link?
    (when prev-page
-     (h:a `((:href . ,prev-page)) "« previous page"))
+     (h:a `(('href . ,prev-page)) "« previous page"))
 
    ; next?
    (when next-page
-     (concat " &#8212; " (h:a `((:href . ,next-page))
+     (concat " &#8212; " (h:a `(('href . ,next-page))
                             "next page »")))
 
    (when (or prev-page next-page)

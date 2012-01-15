@@ -6,7 +6,7 @@
                      (fmb-post-title post) (list post)))
 
 (defun fmb-generate-post-pages ()
-  (map nil #'fmb-page-generation-function *fmb-posts*))
+  (map nil #'fmb-page-generation-function (fmb-blog-posts *the-blog*)))
 
 (defun fmb-generate-categories-pages ()
   (map nil #'(lambda (category)
@@ -27,11 +27,12 @@
                 (remove-if #'(lambda (post)
                                (not (equal archive-cons
                                            (fmb-cons-from-post-time post))))
-                           *fmb-posts*)))
+                           (fmb-blog-posts *the-blog*))))
        *fmb-months-years*))
 
 (defun fmb-generate-rss ()
-  (fmb-generate-rss-page *fmb-blog-title* *fmb-posts*))
+  (fmb-generate-rss-page (fmb-blog-title *the-blog*)
+                         (fmb-blog-posts *the-blog*)))
 
 (progn
 ;;; Housekeeping. Calculate initial variables & values
@@ -47,7 +48,7 @@
 
 ;;; Generate index.html
     (message "Generating index page...\n")
-    (fmb-generate-page "index" nil *fmb-posts*)
+    (fmb-generate-page "index" nil (fmb-blog-posts *the-blog*))
 
 ;;; Generate posts-pages
     (message "Generating post pages...\n")

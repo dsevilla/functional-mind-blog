@@ -270,12 +270,12 @@
 (declaim (inline fmb-post-url))
 (defun fmb-post-url (pst)
   (declare (post pst))
-  (concat *fmb-absolute-url* "/" (fmb-post-slug pst) ".html"))
+  (concat (fmb-blog-absolute-url *the-blog*) "/" (fmb-post-slug pst) ".html"))
 
 (declaim (inline fmb-post-internet-url))
 (defun fmb-post-internet-url (pst)
   (declare (post pst))
-  (concat *fmb-blog-internet-url* "/" (fmb-post-slug pst) ".html"))
+  (concat (fmb-blog-internet-url *the-blog*) "/" (fmb-post-slug pst) ".html"))
 
 (declaim (inline fmb-archive-file))
 (defun fmb-archive-file (archive-cons)
@@ -522,7 +522,7 @@
   `(concat ,@rest))
 
 (defun fmb-blog-file-name (filename)
-  (concat *fmb-base-url* "/" filename))
+  (concat (fmb-blog-base-url *the-blog*) "/" filename))
 
 (defun fmb-new-post (title &rest args)
   "Generate a new post. Increment `*fmb-number-of-posts*', and add it to

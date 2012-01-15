@@ -16,10 +16,10 @@
         >
 
 <channel>
-        <title>" *fmb-blog-title* "</title>
-        <atom:link href=\"" *fmb-blog-internet-rss-url* "\" rel=\"self\" type=\"application/rss+xml\" />
-        <link>" *fmb-blog-internet-url* "</link>
-        <description>" *fmb-blog-subtitle* "</description>
+        <title>" (fmb-blog-title *the-blog*) "</title>
+        <atom:link href=\"" (fmb-blog-internet-rss-url *the-blog*) "\" rel=\"self\" type=\"application/rss+xml\" />
+        <link>" (fmb-blog-internet-url *the-blog*) "</link>
+        <description>" (fmb-blog-subtitle *the-blog*) "</description>
         <lastBuildDate>"
         (fmb-rfc-2822-date)
         "</lastBuildDate>
@@ -61,7 +61,7 @@
   (declare (ignore title))
   (apply #'concat
          (loop for post-string in (mapcar #'fmb-rss-post posts)
-              repeat *fmb-rss-posts-max* ; get the first *rss-posts-max*
+              repeat (fmb-rss-posts-max *the-blog*) ; get the first *rss-posts-max*
               collect post-string)))
 
 (defun fmb-rss-footer (title)
