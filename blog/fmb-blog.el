@@ -430,7 +430,7 @@
   (fmb-first-n-chars (fmb-post-clean-body post)
                      (fmb-blog-rss-description-length *the-blog*)))
 
-(declaim (inline fmb-post-date-lessp))
+(declaim (inline fmb-post-date-greaterp))
 (defun fmb-post-date-greaterp (p1 p2)
   (let* ((timestamp1 (fmb-post-timestamp p1))
          (year1 (cdr (assoc :year timestamp1)))
@@ -469,7 +469,10 @@
        anchor))
 
 (declaim (inline fmb-blog-img))
-(defun fmb-blog-img (img-file &optional &key alt &optional &key anchor &optional &key title &optional &key params)
+(defun fmb-blog-img (img-file &optional &key alt
+                              &optional &key anchor
+                              &optional &key title
+                              &optional &key params)
   (let ((img-html
          (h:img
           (append
