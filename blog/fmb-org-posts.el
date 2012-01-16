@@ -49,3 +49,5 @@
       (setq current-directory-list (cdr current-directory-list)))
     ;; return the filenames
     org-files-list))
+
+(provide 'fmb-org-posts)
