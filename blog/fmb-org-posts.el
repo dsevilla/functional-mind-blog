@@ -41,7 +41,7 @@
           ;; else descend into the directory and repeat the process
           (setq org-files-list
                 (append
-                 (files-in-below-directory
+                 (fmb-files-in-below-directory
                   (car (car current-directory-list)))
                  org-files-list)))))
       ;; move to the next filename in the list; this also
