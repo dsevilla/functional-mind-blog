@@ -63,7 +63,7 @@
 
 ;;; Decode time
 (defun fmb-get-actual-time-for-the-post ()
-    "Return a new association list to be put into the timestamp field of a blog post"
+    "Return a new association list to be put into the timestamp field of a blog post."
     (multiple-value-bind (secs mins hours day month year)
         (decode-time)
       (declare (ignore secs))

@@ -9,6 +9,7 @@
   (require 'fmb-rss2)
   (require 'fmb-pages)
   (require 'fmb-links)
+  (require 'fmb-org-posts)
   (require 'fmb-search))
 
 (defun fmb-page-generation-function (post)
@@ -45,10 +46,13 @@
                          (fmb-blog-posts *the-blog*)))
 
 (defun fmb-do-process ()
-;;; Housekeeping. Calculate initial variables & values
+  ;; Read org files
+  (fmb-import-org-posts)
+
+  ;; Housekeeping. Calculate initial variables & values
   (message "Doing pre-calculations...\n")
 
-  ; order posts by date
+  ;; order posts by date
   (fmb-sort-posts-by-date)
 
   (let ((calc-words-for-posts
@@ -59,37 +63,37 @@
     (fmb-generate-archive-li)
     (fmb-generate-categories-links)
 
-;;; Generate index.html
+    ;; Generate index.html
     (message "Generating index page...\n")
     (fmb-generate-page "index" nil (fmb-blog-posts *the-blog*))
 
-;;; Generate posts-pages
+    ;; Generate posts-pages
     (message "Generating post pages...\n")
     (fmb-generate-post-pages)
 
-;;; Generate categories pages
+    ;; Generate categories pages
     (message "Generating categories pages...\n")
     (fmb-generate-categories-pages)
 
-;;; Generate archives pages
+    ;; Generate archives pages
     (message "Generating archives pages...\n")
     (fmb-generate-archives-pages)
 
-;;; Generate RSS
+    ;; Generate RSS
     (message "Generating RSS...\n")
     (fmb-generate-rss)
 
-;;; Generate description files
+    ;; Generate description files
     (message "Generating description files...\n")
     (fmb-generate-description-files)
 
-;;; Generate search.js
+    ;; Generate search.js
     (message "Generating search.js...\n")
     (fmb-generate-search-js)
 
-;;; Generate Atom... really?
+    ;; Generate Atom... really?
 
-;;; PROCESS END
+    ;; PROCESS END
 ))
 
 (provide 'fmb-process)

@@ -12,6 +12,7 @@
 (require 'fmb-blog)
 (require 'fmb-posts-old)
 (require 'fmb-posts)
+(require 'fmb-org-posts)
 
 ;;; rss
 (require 'fmb-rss2)

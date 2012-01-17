@@ -74,11 +74,17 @@ will be ordered by date finally."
                             (point-min)
                             (point-max)
                             t 'string)))
-        ; org-parse-time-string
-        (fmb-new-post title :date date :categories
-                      (mapcar #'(lambda (s) (intern s))
-                              (split-string categories nil t))
-                      :body body-as-html)
+        (multiple-value-bind (secs mins hours day month year)
+            (org-parse-time-string date)
+          (fmb-new-post title
+                        :day day
+                        :month month
+                        :year year
+                        :hours hours
+                        :minutes mins
+                        :categories (mapcar #'(lambda (s) (intern s))
+                                            (split-string categories nil t))
+                        :body body-as-html))
       (kill-buffer)))))
 
 (provide 'fmb-org-posts)
