@@ -1,5 +1,12 @@
+;;; fmb-org-posts.el --- org-mode utility functions to read posts written in .org
 ;;; -*- mode: emacs-lisp; encoding: utf-8; -*-
 ;;;
+
+
+;;; Commentary:
+;;
+
+;;; Code:
 
 (eval-when-compile
   (require 'cl)
@@ -52,7 +59,8 @@
     org-files-list))
 
 (defun fmb-import-org-posts ()
-  "Search all .org files, create a buffer for each of them,
+  "Import all posts written in .org files.
+Search all .org files, create a buffer for each of them,
 extract all the initial properties (export properties), and then generate
 the HTML equivalent of the body. Add it to the list of actual posts, that
 will be ordered by date finally."
@@ -62,15 +70,17 @@ will be ordered by date finally."
              (title (plist-get file-properties :title))
              (date (plist-get file-properties :date))
              (categories (plist-get file-properties :keywords))
-             (body-as-html (org-export-region-as-html (point-min)
-                                                      (point-max)
-                                                      t 'string))
-                                        ; date
-                                        ; title
-                                        ; categories
-             )
-        (fmb-new-post title :date date :categories categories
+             (body-as-html (org-export-region-as-html
+                            (point-min)
+                            (point-max)
+                            t 'string)))
+        ; org-parse-time-string
+        (fmb-new-post title :date date :categories
+                      (mapcar #'(lambda (s) (intern s))
+                              (split-string categories nil t))
                       :body body-as-html)
-      (kill-buffer))))
+      (kill-buffer)))))
 
 (provide 'fmb-org-posts)
+
+;;; fmb-org-posts.el ends here
