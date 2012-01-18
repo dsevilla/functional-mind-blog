@@ -13,18 +13,9 @@
   (require 'org-exp)
   (require 'fmb-blog))
 
-; org-infile-export-plist
-; #+TITLE:
-; #+DATE:
-; #+KEYWORDS:
-
-; from http://www.gnu.org/software/emacs/emacs-lisp-intro/html_node/Files-List.html
+;; adapted from http://www.gnu.org/software/emacs/emacs-lisp-intro/html_node/Files-List.html
 (defun fmb-files-in-below-directory (directory)
   "List the .org files in DIRECTORY and in its sub-directories."
-  ;; Although the function will be used non-interactively,
-  ;; it will be easier to test if we make it interactive.
-  ;; The directory will have a name such as
-  ;;  "/usr/local/share/emacs/22.1.1/lisp/"
   (interactive "DDirectory name: ")
   (let (org-files-list
         (current-directory-list

@@ -10,8 +10,7 @@
 (require 'fmb-html-opti)
 (require 'fmb-theme)
 (require 'fmb-blog)
-(require 'fmb-posts-old)
-(require 'fmb-posts)
+(require 'fmb-static-blog)
 (require 'fmb-org-posts)
 
 ;;; rss

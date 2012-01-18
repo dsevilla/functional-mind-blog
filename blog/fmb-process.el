@@ -49,11 +49,12 @@
   ;; Read org files
   (fmb-import-org-posts)
 
-  ;; Housekeeping. Calculate initial variables & values
-  (message "Doing pre-calculations...\n")
-
+  (message "Processing org-mode posts.\n")
   ;; order posts by date
   (fmb-sort-posts-by-date)
+
+  ;; Housekeeping. Calculate initial variables & values
+  (message "Doing pre-calculations...\n")
 
   (let ((calc-words-for-posts
          (fmb-update-words-for-all-posts)))
