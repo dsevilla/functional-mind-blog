@@ -19,9 +19,6 @@
 ;;; pages
 (require 'fmb-pages)
 
-;;; links
-(require 'fmb-links)
-
 ;;; search
 (require 'fmb-search)
 

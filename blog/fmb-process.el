@@ -8,7 +8,6 @@
   (require 'fmb-posts)
   (require 'fmb-rss2)
   (require 'fmb-pages)
-  (require 'fmb-links)
   (require 'fmb-org-posts)
   (require 'fmb-search))
 

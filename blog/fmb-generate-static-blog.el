@@ -2,12 +2,14 @@
 ;;;
 
 ;; loading of other files & process
-(require 'cl)
+(eval-when-compile
+  (require 'cl))
 
 (require 'fmb-html-opti)
 (require 'fmb-blog)
 (require 'fmb-posts-old)
 (require 'fmb-posts)
+(require 'fmb-links)
 
 (with-temp-file "fmb-static-blog.el"
   (insert "(eval-when-compile (require 'cl) (require 'fmb-blog))\n"
