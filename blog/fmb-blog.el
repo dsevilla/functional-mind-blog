@@ -237,16 +237,15 @@
       (error "Archive-li not calculated!")))
 (defun fmb-generate-archive-li ()
   (setf (fmb-blog-archive-li *the-blog*)
-        (apply #'concat
-               (mapcar
-                #'(lambda (archive-cons)
-                    (h:li (h:a `((href . ,(concat
-                                           (fmb-archive-file-url archive-cons)
-                                           ".html")))
-                               (format "%s %s"
-                                       (fmb-month-name (car archive-cons))
-                                   (cdr archive-cons)))))
-                (fmb-blog-months-years *the-blog*)))))
+        (mapconcat
+         #'(lambda (archive-cons)
+             (h:li (h:a `((href . ,(concat
+                                    (fmb-archive-file-url archive-cons)
+                                    ".html")))
+                        (format "%s %s"
+                                (fmb-month-name (car archive-cons))
+                                (cdr archive-cons)))))
+         (fmb-blog-months-years *the-blog*))))
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
 ;;; a nice blog class
