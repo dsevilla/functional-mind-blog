@@ -245,7 +245,8 @@
                         (format "%s %s"
                                 (fmb-month-name (car archive-cons))
                                 (cdr archive-cons)))))
-         (fmb-blog-months-years *the-blog*))))
+         (fmb-blog-months-years *the-blog*)
+         "\n")))
 
 ;;; TODO: Convert this in some nice memoizing thing, and/or add it to
 ;;; a nice blog class
