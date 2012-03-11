@@ -112,7 +112,7 @@ the few initial lines of this post:
 
 Some time ago I decided to change my Common-Lisp based blog generator
 to an Emacs-based one. And it was to learn Emacs-Lisp (compared
-#end_src
+#+end_src
 
 Finally, as the great site [[http://nakkaya.com/][nakkaya.com]], I can
 offer, through =org-babel-tangle=, the generation of the files shown
