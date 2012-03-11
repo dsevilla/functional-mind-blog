@@ -98,7 +98,7 @@ function doSearch()
    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\" dir=\"ltr\" lang=\"en-US\"><head profile=\"http://gmpg.org/xfn/11\">
         <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />
-        <meta name=\"generator\" content=\"Fancy Common Lisp code\" />
+        <meta name=\"generator\" content=\"Fancy Emacs-Lisp code\" />
         <meta name=\"author\" content=\"diego sevilla ruiz\" />
         <meta name=\"last-modified\" content=\""
    (fmb-rfc-2822-date)

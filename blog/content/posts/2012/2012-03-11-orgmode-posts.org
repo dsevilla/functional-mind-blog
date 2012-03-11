@@ -1,9 +1,122 @@
-#+TITLE:     First org-mode based post!
+#+TITLE:     Using org-mode to create posts
 #+AUTHOR:    Diego Sevilla
-#+EMAIL:     dsevilla@wintermute
-#+DATE:      2012-01-16 lun
+#+EMAIL:     dsevilla@ditec.um.es
+#+DATE:      2012-03-11 dom
 #+DESCRIPTION:
 #+KEYWORDS:  general org-mode emacs english
 #+LANGUAGE:  en
 
-This is a test post!
+Some time ago I decided to change my Common-Lisp based blog generator
+to an Emacs-based one. And it was to learn Emacs-Lisp (compared
+to Common-Lisp, that I had used before), but mostly to use the
+wonderful org-mode to write posts.
+
+At first I thought that it would be nice to write the posts using Lisp
+alone. Using some HTML-generating library it would be easy to write
+posts like I write Lisp. However, posts have much more text than
+markup, and within lisp (unless you write some reader macro, that I
+may explore in the future), you have to add all those quotes,
+/backquoting/ to eliminate special characters, etc. Posts look like
+this:
+
+#+begin_src lisp
+(fmb-new-post
+ "Let Over Lambda--50 years of Lisp"
+ :body (__ (h:p  "Hoy por casualidad he encontrado esta referencia, "
+               (h:a '((href . "http://letoverlambda.com/index.cl/guest/chap2.html"))
+                  "Let Over Lambda, Closures") " de Doug Hoyte. Es
+                  curioso que sin haberlo leído antes, la solución que
+                  he dado al problema de extraer la descripción de una
+                  entrada del blog sin " (h:em "tags") " HTML ha sido
+                  así usando un " (h:em "closure") "."))
+ :categories '(español spanish programming lisp common-lisp blog)
+ :hours 23
+ :minutes 06
+ :day 9
+ :month 'october
+ :year 2011)
+#+end_src
+
+I was happy because I could practice Lisp any time I wrote a
+post. However, this is not very comfortable, and when I had to
+include code snippets things got worse.
+
+At the same time, I got impressed by the work of
+[[http://reginald.braythwayt.com/][Reg Braithwaite]] with his blog
+[[https://github.com/raganwald/homoiconic][Homoiconic]]. Thanks to the
+formatting capabilities of GitHub, he can write just Markdown files,
+and, with a directory structure that resembles years and months, he
+can write his blog. The name is representative, also, as it is the
+characteristic of programming languages that can treat code as data
+and vice versa (such as Lisp). However, I find much more interesting
+[[http://www.orgmode.org][org-mode]] than Markdown, so I decided I
+wanted to do something similar.
+
+Being written in Common Lisp, I had no library or implementation of
+the complete org-mode, so I decided, also to test other lisps, to use
+Emacs-Lisp and to use the characteristics of org-mode directly to
+produce the HTML that goes into posts, and even to support its
+tangling feature (more on that later). Also, it allowed me to have
+[[https://github.com/dsevilla/functional-mind-blog/tree/emacs-lisp-version/blog/content/posts][a
+directory] in which all the posts live, and be able to browse them
+just using GitHub (where this blog now lives), as now GitHub also
+renders org-mode content (not quite correctly, but acceptably.)
+
+The code that generates the HTML from the org-mode files is the
+following. It uses a function to obtain all the ~.org~ files, and with
+them, obtains the file properties, title, date, and categories, and
+generates the HTML with =org-export-region-as-html=:
+
+#+begin_src emacs-lisp
+(defun fmb-import-org-posts ()
+  "Import all posts written in .org files.
+Search all .org files, create a buffer for each of them,
+extract all the initial properties (export properties), and then generate
+the HTML equivalent of the body. Add it to the list of actual posts, that
+will be ordered by date finally."
+  (dolist (f (fmb-files-in-below-directory "content/posts"))
+    (with-current-buffer (find-file-noselect f)
+      (let* ((file-properties (org-infile-export-plist))
+             (title (plist-get file-properties :title))
+             (date (plist-get file-properties :date))
+             (categories (plist-get file-properties :keywords))
+             (body-as-html (org-export-region-as-html
+                            (point-min)
+                            (point-max)
+                            t 'string)))
+        (multiple-value-bind (secs mins hours day month year)
+            (org-parse-time-string date)
+          (fmb-new-post title
+                        :day day
+                        :month month
+                        :year year
+                        :hours hours
+                        :minutes mins
+                        :categories (mapcar #'(lambda (s) (intern s))
+                                            (split-string categories nil t))
+                        :body body-as-html))
+      (kill-buffer)))))
+#+end_src
+
+Categories are extracted from the ~#+KEYWORDS~ option. For example,
+the few initial lines of this post:
+
+#+begin_src org
+#+TITLE:     Using org-mode to create posts
+#+AUTHOR:    Diego Sevilla
+#+EMAIL:     dsevilla@ditec.um.es
+#+DATE:      2012-03-11 dom
+#+DESCRIPTION:
+#+KEYWORDS:  general org-mode emacs english
+#+LANGUAGE:  en
+
+Some time ago I decided to change my Common-Lisp based blog generator
+to an Emacs-based one. And it was to learn Emacs-Lisp (compared
+#end_src
+
+Finally, as the great site [[http://nakkaya.com/][nakkaya.com]], I can
+offer, through =org-babel-tangle=, the generation of the files shown
+in the entry. See, for example,
+[[http://nakkaya.com/2011/06/29/ferret-an-experimental-clojure-compiler/][this
+entry about the Ferret compiler]]. This open the world of Literate
+Programming also to this blog. All in all, a winning configuration.
