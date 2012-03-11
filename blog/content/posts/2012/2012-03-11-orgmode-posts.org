@@ -58,7 +58,7 @@ Emacs-Lisp and to use the characteristics of org-mode directly to
 produce the HTML that goes into posts, and even to support its
 tangling feature (more on that later). Also, it allowed me to have
 [[https://github.com/dsevilla/functional-mind-blog/tree/emacs-lisp-version/blog/content/posts][a
-directory] in which all the posts live, and be able to browse them
+directory]] in which all the posts live, and be able to browse them
 just using GitHub (where this blog now lives), as now GitHub also
 renders org-mode content (not quite correctly, but acceptably.)
 
