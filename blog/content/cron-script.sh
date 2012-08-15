@@ -12,7 +12,7 @@ cp -r content/templates/* fm
 cp -r content/templates/.htaccess fm
 cp -r content/img/* fm/img
 
-nice emacs --batch -Q --directory $BASEDIR -l functional-mind-blog
+nice emacs --batch --directory $BASEDIR -l functional-mind-blog
 
 if test -e fm/index.html ; then #success?
     rm -rf /var/www/fm
