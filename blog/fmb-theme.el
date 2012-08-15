@@ -109,6 +109,7 @@ function doSearch()
      (format " » %s" title))
    "</title>
                 <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"zbench/style.css\" />
+                <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"org.css\" />
    <link rel=\"alternate\" type=\"application/rss+xml\" title=\""
    (fmb-blog-title *the-blog*)
    " » Feed\" href=\"rss2.xml\" />"

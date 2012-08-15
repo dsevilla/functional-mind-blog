@@ -20,4 +20,4 @@ if test -e fm/index.html ; then #success?
 fi
 
 # cleanup
-rm -rf $TMPDIR
+#rm -rf $TMPDIR

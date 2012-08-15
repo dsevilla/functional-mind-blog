@@ -55,6 +55,7 @@ Search all .org files, create a buffer for each of them,
 extract all the initial properties (export properties), and then generate
 the HTML equivalent of the body. Add it to the list of actual posts, that
 will be ordered by date finally."
+  (setq org-export-htmlize-output-type 'css)
   (dolist (f (fmb-files-in-below-directory "content/posts"))
     (with-current-buffer (find-file-noselect f)
       (let* ((file-properties (org-infile-export-plist))
