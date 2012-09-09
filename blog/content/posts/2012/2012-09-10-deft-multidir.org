@@ -1,4 +1,4 @@
-#+TITLE:     Modified ~deft-mode~ to multiple directories
+#+TITLE:     Modified deft-mode to multiple directories
 #+AUTHOR:    Diego Sevilla
 #+EMAIL:     dsevilla@ditec.um.es
 #+DATE:      <2012-09-10 lun>
