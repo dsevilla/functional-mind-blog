@@ -1,0 +1,25 @@
+#+TITLE:     Modified ~deft-mode~ to multiple directories
+#+AUTHOR:    Diego Sevilla
+#+EMAIL:     dsevilla@ditec.um.es
+#+DATE:      <2012-09-10 lun>
+#+DESCRIPTION:
+#+KEYWORDS:  general org-mode deft emacs-lisp lisp emacs english
+#+LANGUAGE:  en
+
+After some hacking, I've been able to modify the wonderful Deft mode
+by Jason R. Blevins to support several directories. I had my notes
+divided in several directories, including my TO-DO entries, and I
+thought it would be nice to give Deft the possibility to support
+several directories, and at the same time, an exercise for my Emacs
+Lisp.
+
+I tried to make the least modifications as possible to the original
+source, so that the change can be made with a patch, if the original
+author considers it (this is also why I didn't change the name of the
+mode either.) You can download it, and read instructions of
+installation and usage here:
+
+[[https://github.com/dsevilla/deft-multidir][deft-multidir on GitHub]]
+
+As always, feedback is highly appreciated.
+
