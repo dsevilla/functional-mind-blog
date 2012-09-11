@@ -16,29 +16,29 @@
                      (fmb-post-title post) (list post)))
 
 (defun fmb-generate-post-pages ()
-  (map nil #'fmb-page-generation-function (fmb-blog-posts *the-blog*)))
+  (mapc #'fmb-page-generation-function (fmb-blog-posts *the-blog*)))
 
 (defun fmb-generate-categories-pages ()
-  (map nil #'(lambda (category)
-               (let ((name (downcase (symbol-name category))))
-                 (fmb-generate-page
-                  (format "category-%s" name)
-                  (format "Posts of the %s category" name)
-                  (fmb-posts-for-category category))))
-       (fmb-all-categories)))
+  (mapc #'(lambda (category)
+            (let ((name (downcase (symbol-name category))))
+              (fmb-generate-page
+               (format "category-%s" name)
+               (format "Posts of the %s category" name)
+               (fmb-posts-for-category category))))
+        (fmb-all-categories)))
 
 (defun fmb-generate-archives-pages ()
-  (map nil #'(lambda (archive-cons)
-               (fmb-generate-page
-                (fmb-archive-file archive-cons)
-                (format "Archives for %s, %d"
-                        (fmb-month-name (car archive-cons))
-                        (cdr archive-cons))
-                (remove-if #'(lambda (post)
-                               (not (equal archive-cons
-                                           (fmb-cons-from-post-time post))))
-                           (fmb-blog-posts *the-blog*))))
-       (fmb-blog-months-years *the-blog*)))
+  (mapc #'(lambda (archive-cons)
+            (fmb-generate-page
+             (fmb-archive-file archive-cons)
+             (format "Archives for %s, %d"
+                     (fmb-month-name (car archive-cons))
+                     (cdr archive-cons))
+             (remove-if #'(lambda (post)
+                            (not (equal archive-cons
+                                        (fmb-cons-from-post-time post))))
+                        (fmb-blog-posts *the-blog*))))
+        (fmb-blog-months-years *the-blog*)))
 
 (defun fmb-generate-rss ()
   (fmb-generate-rss-page (fmb-blog-title *the-blog*)
