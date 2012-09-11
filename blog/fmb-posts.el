@@ -708,4 +708,13 @@ La función <code>new-post</code> me permite añadir una entrada al blog. Es có
  :body-format 'string
  :hours 00 :minutes 16 :day 15 :month 11 :year 2011)
 
+(fmb-new-post
+ "Family at the beach"
+ :body (__ "<a href=\"http://www.flickr.com/photos/dsevilla/7975902173/\" title=\"family at the beach por dsevilla, en Flickr\"><img src=\"http://farm9.staticflickr.com/8312/7975902173_cfa93775f1_z.jpg\" width=\"640\" height=\"432\" alt=\"family at the beach\"></a>"
+           (h:p "Some time ago. Mamiya Press Super 23 + Sekor 90/3.5 + 6x9 back + Fuji PRO 160 long expired."))
+ :categories '(english martina family photo film)
+ :body-format 'string
+ :hours 13 :minutes 00 :day  11 :month 9 :year 2012)
+
+
 (provide 'fmb-posts)
