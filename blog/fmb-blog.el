@@ -53,9 +53,7 @@
     "august" "september" "october" "november" "december"))
 
 (defconst *fmb-month-symbols*
-  '(january february march april may june july
-    august september october november december))
-
+  (mapcar #'intern *fmb-month-names*))
 
 (defconst *fmb-day-names*
   '("sunday" "monday" "tuesday" "wednesday"
@@ -185,8 +183,7 @@
             (format "%s-%s" initial-slug (fmb-post-hash post))))
                                         ; fill hash table of post
                                         ; slugs to avoid duplicates
-    (setf (gethash initial-slug (fmb-blog-slug-hash *the-blog*)) initial-slug)))
-
+    (puthash initial-slug t (fmb-blog-slug-hash *the-blog*))))
 
 (defun fmb-month-name (n) ; 1-12
   (nth (1- n) *fmb-month-names*))
@@ -268,8 +265,9 @@
                                                    (fmb-post-categories post))))
                                   (fmb-blog-posts *the-blog*)))
                       (l (length posts)))
-                 (setf (gethash category (fmb-blog-posts-for-category *the-blog*))
-                       (cons l posts))))
+                 (puthash category
+                          (cons l posts)
+                          (fmb-blog-posts-for-category *the-blog*))))
        (fmb-all-categories)))
 
 (defun fmb-posts-for-category (category)
