@@ -259,9 +259,10 @@
                    (puthash cat (cons post (gethash cat hash)) hash))
                (fmb-post-categories post)))
           (fmb-blog-posts *the-blog*))
+    ;; Reverse posts for them to be in the correct order
     (mapc #'(lambda (cat)
               (let ((l (gethash cat hash)))
-                (puthash cat (cons (length l) l) hash)))
+                (puthash cat (cons (length l) (nreverse l)) hash)))
           (fmb-hash-keys hash))))
 
 (defun fmb-posts-for-category (category)
