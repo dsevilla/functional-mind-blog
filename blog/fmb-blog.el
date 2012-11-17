@@ -260,7 +260,7 @@
           (fmb-blog-posts *the-blog*))
     (mapc #'(lambda (cat)
               (let ((l (gethash cat hash)))
-                (puthash cat (cons (length l) l))))
+                (puthash cat (cons (length l) l) hash)))
           (fmb-hash-keys hash))))
 
 (defun fmb-posts-for-category (category)
