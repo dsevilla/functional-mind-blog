@@ -183,7 +183,8 @@
             (format "%s-%s" initial-slug (fmb-post-hash post))))
                                         ; fill hash table of post
                                         ; slugs to avoid duplicates
-    (puthash initial-slug t (fmb-blog-slug-hash *the-blog*))))
+    (puthash initial-slug t (fmb-blog-slug-hash *the-blog*))
+    initial-slug))
 
 (defun fmb-month-name (n) ; 1-12
   (nth (1- n) *fmb-month-names*))
