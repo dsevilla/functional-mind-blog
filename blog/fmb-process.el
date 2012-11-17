@@ -57,7 +57,6 @@
 
   (let ((calc-words-for-posts
          (fmb-update-words-for-all-posts)))
-    (fmb-generate-all-categories)
     (fmb-classify-posts-by-category)
     (fmb-generate-dates-for-archives)
     (fmb-generate-archive-li)

@@ -19,7 +19,7 @@
   rss-description-length
   rss-posts-max
   posts-per-page
-  (posts-for-category (make-hash-table))
+  (posts-for-category (make-hash-table :test #'eq))
   (slug-hash (make-hash-table :test #'equal))
   posts
   (number-of-posts 0)
@@ -245,36 +245,27 @@
          (fmb-blog-months-years *the-blog*)
          "\n")))
 
-;;; TODO: Convert this in some nice memoizing thing, and/or add it to
-;;; a nice blog class
-(defun fmb-all-categories ()
-  (or (fmb-blog-all-categories *the-blog*)
-      (error "Categories not calculated")))
-(defun fmb-generate-all-categories ()
-  (setf (fmb-blog-all-categories *the-blog*)
-        (reduce #'(lambda (cat-set post)
-                    (union cat-set (fmb-post-categories post)))
-                (fmb-blog-posts *the-blog*) :initial-value nil)))
+(defun fmb-hash-keys (hash)
+  (let (k-list)
+    (maphash #'(lambda (k v) (setq k-list (cons k k-list))) hash)
+    k-list))
 
-;;; TODO: Convert this in some nice memoizing thing
 (defun fmb-classify-posts-by-category ()
-  (map nil #'(lambda (category)
-               (let* ((posts
-                       (remove-if #'(lambda (post)
-                                      (not (member category
-                                                   (fmb-post-categories post))))
-                                  (fmb-blog-posts *the-blog*)))
-                      (l (length posts)))
-                 (puthash category
-                          (cons l posts)
-                          (fmb-blog-posts-for-category *the-blog*))))
-       (fmb-all-categories)))
+  (let ((hash (fmb-blog-posts-for-category *the-blog*)))
+    (mapc #'(lambda (post)
+              (mapc
+               #'(lambda (cat)
+                   (puthash cat (cons post (gethash cat hash)) hash))
+               (fmb-post-categories post)))
+          (fmb-blog-posts *the-blog*))
+    (mapc #'(lambda (cat)
+              (let ((l (gethash cat hash)))
+                (puthash cat (cons (length l) l))))
+          (fmb-hash-keys hash))))
 
 (defun fmb-posts-for-category (category)
   (cdr (gethash category (fmb-blog-posts-for-category *the-blog*))))
 
-;;; TODO: Convert this in some nice memoizing thing, and/or add it to
-;;; a nice blog class
 (defun fmb-categories-links ()
   (or (fmb-blog-categories-links *the-blog*)
       (error "Categories links not calculated.")))
