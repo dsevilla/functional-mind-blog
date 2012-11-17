@@ -25,7 +25,7 @@
                (format "category-%s" name)
                (format "Posts of the %s category" name)
                (fmb-posts-for-category category))))
-        (fmb-all-categories)))
+        (fmb-hash-keys (fmb-blog-posts-for-category *the-blog*))))
 
 (defun fmb-generate-archives-pages ()
   (mapc #'(lambda (archive-cons)
