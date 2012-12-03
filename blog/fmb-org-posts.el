@@ -74,7 +74,7 @@ will be ordered by date finally."
                         :year year
                         :hours hours
                         :minutes mins
-                        :categories (mapcar #'(lambda (s) (intern s))
+                        :categories (mapcar #'intern
                                             (split-string categories nil t))
                         :body body-as-html))
       (kill-buffer)))))

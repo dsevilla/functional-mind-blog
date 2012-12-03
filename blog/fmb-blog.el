@@ -208,7 +208,7 @@
 
 (defun fmb-post-categories-links (pst)
   (declare (post pst))
-  (mapconcat #'(lambda (c) (format "%s" c))
+  (mapconcat #'identity
              (mapcar #'fmb-url-for-category (fmb-post-categories pst))
              ", "))
 
