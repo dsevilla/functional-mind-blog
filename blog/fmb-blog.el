@@ -151,38 +151,25 @@
 
 (defun fmb-calc-post-slug (post)
   (let ((initial-slug (fmb-initial-slug post)))
-                                        ; First, try to add the empty
-                                        ; post slug. This limitates us
-                                        ; to posts with the same title
-                                        ; the very same day
+    ;; First, try to add the empty post slug. This limitates us
+    ;; to posts with the same title the very same day
     (when (gethash initial-slug (fmb-blog-slug-hash *the-blog*))
       (setf initial-slug
             (format "%s-%s" initial-slug (fmb-empty-post-slug post))))
-                                        ; If still in the hash table,
-                                        ; do a hash for all the
-                                        ; characters in the post and
-                                        ; add a byte hash. The
-                                        ; probability of coincidence
-                                        ; is rather low, so we'll stop
-                                        ; here trying to find
-                                        ; duplicates and will assume
-                                        ; that there are not.  The
-                                        ; real solution would have
-                                        ; been to start by the end of
-                                        ; the list of posts, to
-                                        ; maintain stability of
-                                        ; repeated post slug names and
-                                        ; generate always the same
-                                        ; substitution, but limiting
-                                        ; to the date *and* the hash
-                                        ; gives us a very huge chance
-                                        ; of non-repetition and
-                                        ; stability.
+    ;; If still in the hash table, do a hash for all the
+    ;; characters in the post and add a byte hash. The
+    ;; probability of coincidence is rather low, so we'll stop
+    ;; here trying to find duplicates and will assume
+    ;; that there are not.  The real solution would have
+    ;; been to start by the end of the list of posts, to
+    ;; maintain stability of repeated post slug names and
+    ;; generate always the same substitution, but limiting
+    ;; to the date *and* the hash gives us a very huge chance
+    ;; of non-repetition and stability.
     (when (gethash initial-slug (fmb-blog-slug-hash *the-blog*))
       (setf initial-slug
             (format "%s-%s" initial-slug (fmb-post-hash post))))
-                                        ; fill hash table of post
-                                        ; slugs to avoid duplicates
+    ;; fill hash table of post slugs to avoid duplicates
     (puthash initial-slug t (fmb-blog-slug-hash *the-blog*))
     initial-slug))
 
@@ -247,9 +234,7 @@
          "\n")))
 
 (defun fmb-hash-keys (hash)
-  (let (k-list)
-    (maphash #'(lambda (k v) (setq k-list (cons k k-list))) hash)
-    k-list))
+  (loop for k being the hash-keys of hash collect k))
 
 (defun fmb-classify-posts-by-category ()
   (let ((hash (fmb-blog-posts-for-category *the-blog*)))
