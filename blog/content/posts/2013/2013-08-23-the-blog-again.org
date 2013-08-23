@@ -3,7 +3,7 @@
 #+EMAIL:     dsevilla@ditec.um.es
 #+DATE:      <2013-08-23 vie>
 #+DESCRIPTION:
-#+KEYWORDS:  general draft
+#+KEYWORDS:  general
 #+LANGUAGE:  en
 
 Well, after almost a year, I would like to continue writting in my
