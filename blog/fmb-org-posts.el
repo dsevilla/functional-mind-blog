@@ -61,8 +61,7 @@ will be ordered by date finally."
       (let* ((file-properties (org-infile-export-plist))
              (categories (plist-get file-properties :keywords)))
         (unless (let ((case-fold-search 1))
-                  (and categories
-                       (string-match "draft" categories)))
+                  (string-match "draft" categories))
           (let ((title (plist-get file-properties :title))
                 (date (plist-get file-properties :date))
                 (body-as-html
