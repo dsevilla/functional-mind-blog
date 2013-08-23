@@ -59,7 +59,7 @@ will be ordered by date finally."
   (dolist (f (fmb-files-in-below-directory "content/posts"))
     (with-current-buffer (find-file-noselect f)
       (let* ((file-properties (org-infile-export-plist))
-             (categories (plist-get file-properties :categories)))
+             (categories (plist-get file-properties :keywords)))
         (unless (let ((case-fold-search 1))
                   (and categories
                        (string-match "draft" categories)))
