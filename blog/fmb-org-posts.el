@@ -59,25 +59,26 @@ will be ordered by date finally."
   (dolist (f (fmb-files-in-below-directory "content/posts"))
     (with-current-buffer (find-file-noselect f)
       (let* ((file-properties (org-infile-export-plist))
-             (title (plist-get file-properties :title))
-             (date (plist-get file-properties :date))
-             (categories (plist-get file-properties :keywords))
-             (body-as-html (org-export-region-as-html
-                            (point-min)
-                            (point-max)
-                            t 'string)))
-        (multiple-value-bind (secs mins hours day month year)
-            (org-parse-time-string date)
-          (fmb-new-post title
-                        :day day
-                        :month month
-                        :year year
-                        :hours hours
-                        :minutes mins
-                        :categories (mapcar #'intern
-                                            (split-string categories nil t))
-                        :body body-as-html))
-      (kill-buffer)))))
+             (categories (plist-get file-properties :categories)))
+        (unless (let ((case-fold-search 1))
+                  (and categories
+                       (string-match "draft" categories)))
+          (let ((title (plist-get file-properties :title))
+                (date (plist-get file-properties :date))
+                (body-as-html
+                 (org-export-region-as-html (point-min) (point-max) t 'string)))
+            (multiple-value-bind (secs mins hours day month year)
+                (org-parse-time-string date)
+              (fmb-new-post title
+                            :day day
+                            :month month
+                            :year year
+                            :hours hours
+                            :minutes mins
+                            :categories (mapcar #'intern
+                                                (split-string categories nil t))
+                            :body body-as-html))
+            (kill-buffer)))))))
 
 (provide 'fmb-org-posts)
 

@@ -1,0 +1,14 @@
+#+TITLE:     The blog, again!
+#+AUTHOR:    Diego Sevilla
+#+EMAIL:     dsevilla@ditec.um.es
+#+DATE:      <2013-08-23 vie>
+#+DESCRIPTION:
+#+KEYWORDS:  general draft
+#+LANGUAGE:  en
+
+Well, after almost a year, I would like to continue writting in my
+blog. Let's see if this time I keep it up to date. I just added a
+"status" tag to each post. I wanted to add this time ago to maintain
+long, unfinished things while the blog gets unaffected. I have a lot
+of pending things to include in the blog. I will be updating it
+periodically. I promise.
