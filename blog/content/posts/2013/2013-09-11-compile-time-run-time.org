@@ -95,7 +95,7 @@ Among them, I'll use Acceleo. It has reasonable power, and also is
 backed by an OMG standard. To show you an example of how Acceleo code
 looks like for a class expansion, here is what I currently do:
 
-#+begin_src
+#+begin_src screen
 [template public generateRacket(anEPackage : EPackage)]
 [comment @main/]
 [file (decamel(anEPackage.name)+'.rkt', false, 'UTF-8')]
