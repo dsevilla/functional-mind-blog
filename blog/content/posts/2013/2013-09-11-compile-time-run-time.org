@@ -1,0 +1,148 @@
+#+TITLE:     Compile time, Run time, Scheme, and everything (part 1)
+#+AUTHOR:    Diego Sevilla
+#+EMAIL:     dsevilla@ditec.um.es
+#+DATE:      <2013-09-11 mié>
+#+DESCRIPTION:
+#+KEYWORDS:  general lisp macros scheme
+#+LANGUAGE:  en
+
+For this summer I wanted to learn Scheme and compare with my knowledge
+of Common Lisp and Emacs Lisp. The idea came after starting to read
+the wonderful [[http://mitpress.mit.edu/sicp/][SICP]], and also, after
+playing around a little bit with the wonderful
+[[http://www.racket-lang.org][Racket]] implementation.
+
+I also selected Racket because it provides a wonderful GUI library
+that is multi-platform too. The project I'm describing here is part
+of another one that has a GUI.
+
+*The Project*
+
+The project itself can be seen in
+[[https://github.com/dsevilla/ecore2racket][GitHub (ecore2racket)]].
+The aim of the project is to provide a mapping of Eclipse Modeling
+Framework ([[http://www.eclipse.org/modeling/emf/][EMF]]) Ecore
+metamodels to Racket/Scheme code, using Racket's object-oriented
+features (as Ecore is object-oriented). This is similar to what we
+did for C++: [[https://github.com/catedrasaes-umu/emf4cpp][EMF4CPP]].
+
+First of all, Ecore is object oriented. That is, the main building
+blocks of metamodels are classes and relations among them
+(inheritance, reference, etc.) That said, Lisp in general, and Scheme
+in particular, allow a wide range of implementation options for the
+mapping: In a heartbeat you can find three implementations of OOP
+frameworks that you can use:
+[[http://community.schemewiki.org/?Tiny-CLOS][TinyCLOS]],
+[[http://docs.racket-lang.org/swindle/][Swindle]] (included in Racket
+as a package) and off-the-shelf
+[[http://docs.racket-lang.org/reference/mzlib_class.html][Racket
+support for OOP]].
+
+At first I thought of using TinyClOS, as it is compatible with most
+Scheme implementations (more on compatibility later), but the fact is
+that the support for classes in Racket is so good that I couldn't
+resist using it (paired with the great support for class/function
+contracts, that I will talk about in future entries).
+
+At first sight, Racket classes are easy to spot, even coming from any
+other language that uses OOP constructs:
+
+#+begin_src scheme
+  (define eobject%
+    (class* object% (classifier<%>)
+  
+      (super-new)
+  
+      (define -e-name "EObject")
+      (define -e-package "ecore")
+  
+      ;; classifier<%> interface methods
+      (define/public (e-name) -e-name)
+      (define/public (e-name-set! n) (set! -e-name n))
+  
+      (define/public (e-package) -e-package)
+      (define/public (e-package-set! p) (set! -e-package p))))
+#+end_src
+
+The =class*= construct creates a class that inherits, in this case,
+from =object%= (by convention Racket class names end with a =%=),
+implements the =classifier<%>= interface (not shown) and has some
+internal members (those defined with =define=) and some public
+methods, those stated with =define/public=. There is more (but not
+much more) to it. You can check the documentation.
+
+Creating an object and calling methods is also natural:
+
+#+begin_src scheme
+(define myeobject (new eobject%))
+(send myeobject e-name)
+;=> "EObject"
+(send myeobject e-name-set! "EObject1")
+#+end_src
+
+=new= creates an object, and =send= can call methods previously
+defined with =define/public=.
+
+*Generating code for the metamodels*
+
+Now to the problem. Given an Ecore metamodel, we have to create a
+mapping classes in Racket. The EMF framework provides a series of
+tools to generate code from Ecore metamodels. You can collect all the
+classes, attributes, and relationships, and generate code for each of
+them. In the MDE jargon, this is known as M2T (Model to Text).
+
+Among them, I'll use Acceleo. It has reasonable power, and also is
+backed by an OMG standard. To show you an example of how Acceleo code
+looks like for a class expansion, here is what I currently do:
+
+#+begin_src
+[template public generateRacket(anEPackage : EPackage)]
+[comment @main/]
+[file (decamel(anEPackage.name)+'.rkt', false, 'UTF-8')]
+#lang racket/base
+
+[generate_provides(anEPackage)/]
+
+[for (klass : EClass | anEPackage.eClassifiers->filter(EClass))]
+[generate_EClass(klass)/]
+[/for]
+
+...
+
+[template private generate_EClass(klass: EClass)]
+[generate_interface(klass)/]
+[generate_EClass_proper(klass)/]
+[/template]
+
+[template private generate_interface (aEClass : EClass) ]
+(define [eclass_to_racket_interface_name(aEClass)/]
+  (interface ([superiface_spec(aEClass)/])
+[for (sf: EStructuralFeature | aEClass.eStructuralFeatures)]
+[let dec : String = decamel(sf.name)]
+[dec/]
+[if sf.changeable]
+[dec/]-set!
+[/if]
+[/let]
+[/for]
+))
+[/template]
+#+end_src
+
+There are several templates that are expanded for each type of
+element of the model (classes, attributes, etc.) In the shown
+snippet, for each class in a package, the template =generate_EClass=
+is called. This generates an interface and a class definition. There
+are auxiliary functions not shown, like
+=eclass_to_racket_interface_name=, that build Racket idiomatic names
+out of Ecore classes.
+
+*Next Part*
+
+Enough for today. In the next part we'll see alternatives in the code
+generation: either generating all the Racket code using Acceleo or
+generating Racket/Scheme macros. I can tell already that we'll select
+the second version, as the complete metaprogramming capabilities of
+Racket are far superior than Acceleo, that lacks the more basic
+features of any programming language (such as case, for example,
+vital for generating different code for each model element type).
