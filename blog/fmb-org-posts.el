@@ -10,7 +10,8 @@
 
 (eval-when-compile
   (require 'cl)
-  (require 'org-exp)
+  (require 'ox)
+  (require 'ox-html)
   (require 'fmb-blog))
 
 ;; adapted from http://www.gnu.org/software/emacs/emacs-lisp-intro/html_node/Files-List.html
@@ -55,17 +56,18 @@ Search all .org files, create a buffer for each of them,
 extract all the initial properties (export properties), and then generate
 the HTML equivalent of the body. Add it to the list of actual posts, that
 will be ordered by date finally."
-  (setq org-export-htmlize-output-type 'css)
+  (setq org-html-htmlize-output-type 'css)
   (dolist (f (fmb-files-in-below-directory "content/posts"))
     (with-current-buffer (find-file-noselect f)
-      (let* ((file-properties (org-infile-export-plist))
+      (let* ((file-properties (org-export-get-environment 'html))
              (categories (plist-get file-properties :keywords)))
         (unless (let ((case-fold-search 1))
                   (string-match "draft" categories))
-          (let ((title (plist-get file-properties :title))
-                (date (plist-get file-properties :date))
+          (let ((title (substring-no-properties (car (plist-get file-properties :title))))
+                (date (substring-no-properties
+                       (plist-get (cadar (plist-get file-properties :date)) :raw-value)))
                 (body-as-html
-                 (org-export-region-as-html (point-min) (point-max) t 'string)))
+                 (org-export-as 'html nil t t)))
             (multiple-value-bind (secs mins hours day month year)
                 (org-parse-time-string date)
               (fmb-new-post title

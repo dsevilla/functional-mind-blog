@@ -93,6 +93,7 @@
     ;; Generate Atom... really?
 
     ;; PROCESS END
+    (message "End.\n")
 ))
 
 (provide 'fmb-process)

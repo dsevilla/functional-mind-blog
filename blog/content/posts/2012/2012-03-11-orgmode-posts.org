@@ -1,7 +1,7 @@
 #+TITLE:     Using org-mode to create posts
 #+AUTHOR:    Diego Sevilla
 #+EMAIL:     dsevilla@ditec.um.es
-#+DATE:      2012-03-11 dom
+#+DATE:      <2012-03-11 dom>
 #+DESCRIPTION:
 #+KEYWORDS:  general org-mode emacs english
 #+LANGUAGE:  en
