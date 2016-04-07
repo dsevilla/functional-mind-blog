@@ -8,7 +8,6 @@
 (require 'fmb-html-opti)
 (require 'fmb-blog)
 (require 'fmb-posts-old)
-(require 'fmb-posts)
 (require 'fmb-links)
 
 (with-temp-file "fmb-static-blog.el"
@@ -20,5 +19,3 @@
           "(provide 'fmb-static-blog)"))
 
 (provide 'fmb-generate-static-blog)
-
-
