@@ -7,7 +7,6 @@
 
 (require 'fmb-html-opti)
 (require 'fmb-blog)
-(require 'fmb-posts-old)
 (require 'fmb-posts)
 (require 'fmb-links)
 
