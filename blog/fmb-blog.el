@@ -113,7 +113,7 @@
 
 
 (defun fmb-remove-non-url-chars (string)
-  (declare (optimize speed) (string string))
+  (declare (optimize speed))
    (coerce
     (loop for c across string  ; that Spanish thing...
          for j = (cond
